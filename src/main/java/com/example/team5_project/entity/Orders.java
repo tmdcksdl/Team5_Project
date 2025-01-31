@@ -45,4 +45,7 @@ public class Orders extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status")
     private OrderStatus orderStatus;
+
+
+    public void update(){}
 }
