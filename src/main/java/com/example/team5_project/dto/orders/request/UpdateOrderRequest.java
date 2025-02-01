@@ -1,4 +1,6 @@
 package com.example.team5_project.dto.orders.request;
 
-public record UpdateOrderRequest() {
+import jakarta.validation.constraints.NotBlank;
+
+public record UpdateOrderRequest(@NotBlank String orderStatus) {
 }

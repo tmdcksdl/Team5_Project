@@ -21,28 +21,25 @@ public class OrdersController {
     private final OrderService orderService;
 
     @PostMapping("/product/{productId}/order")
-    public ResponseEntity<CreateOrderResponse> createOrder(@RequestAttribute("id") Long MemberId,
+    public ResponseEntity<CreateOrderResponse> createOrder(@RequestAttribute("id") Long memberId,
                                                           @PathVariable(name = "productId")Long productId,
                                                           @RequestBody CreateOrderRequest requestDto
     ){
-        CreateOrderResponse response = orderService.createOrder(MemberId, productId, requestDto);
+        CreateOrderResponse response = orderService.createOrder(memberId, productId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/order/{ordersId}")
-    public ResponseEntity<UpdateOrderResponse> updateOrderStatus(@RequestAttribute("id")Long MemberId,
+    public ResponseEntity<UpdateOrderResponse> updateOrderStatus(@RequestAttribute("id")Long memberId,
                                                                  @PathVariable(name ="orderId")Long orderId,
                                                                  @RequestBody UpdateOrderRequest requestDto
     ){
-        return null;
+        UpdateOrderResponse response = orderService.updateOrderStatus(memberId, orderId, requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/order/{ordersId}")
-    public ResponseEntity<Void> cancelOrder(@RequestAttribute("id")Long MemberId,
-                                            @PathVariable(name ="orderId")Long orderId
-    ){
-        return null;
-    }
+
 
     @GetMapping("/orders")
     public ResponseEntity<Page<OrderPageableResponse>> findOrderHistoryByMember(@RequestAttribute("id")Long MemberId){
