@@ -5,17 +5,20 @@ import com.example.team5_project.common.exception.OrderCancellationException;
 import com.example.team5_project.common.exception.OutOfStockException;
 import com.example.team5_project.dto.orders.request.CreateOrderRequest;
 import com.example.team5_project.dto.orders.request.UpdateOrderRequest;
-import com.example.team5_project.dto.orders.response.CreateOrderResponse;
+import com.example.team5_project.dto.orders.response.OrderResponse;
 import com.example.team5_project.dto.orders.response.OrderPageableResponse;
-import com.example.team5_project.dto.orders.response.ReadOrderResponse;
 import com.example.team5_project.dto.orders.response.UpdateOrderResponse;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.entity.Orders;
 import com.example.team5_project.entity.Product;
+import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.MemberRepository;
 import com.example.team5_project.repository.OrdersRepository;
 import com.example.team5_project.repository.ProductRepository;
+import com.example.team5_project.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +32,10 @@ public class OrderService {
     private final OrdersRepository ordersRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional
-    public CreateOrderResponse createOrder(Long memberId, Long productId, CreateOrderRequest requestDto) {
+    public OrderResponse createOrder(Long memberId, Long productId, CreateOrderRequest requestDto) {
 
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NullPointerException("해당 멤버는 존재하지 않습니다"));
@@ -53,7 +57,7 @@ public class OrderService {
         Orders order = new Orders(findMember, findProduct, OrderStatus.주문접수, requestDto.quantity());
         Orders saveOrder = ordersRepository.save(order);
 
-        return new CreateOrderResponse(saveOrder);
+        return new OrderResponse(saveOrder);
     }
 
 
@@ -78,24 +82,69 @@ public class OrderService {
     }
 
 
+    @Transactional
+    public UpdateOrderResponse cancelOrder(Long memberId, Long orderId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NullPointerException("해당 멤버는 존재하지 않습니다"));
 
+        Orders order = ordersRepository.findById(orderId)
+                .orElseThrow(()->new NullPointerException("해당 주문건은 존재하지 않습니다"));
 
+        if(member.equals(order.getMember())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 주문만 상태변경할 수 있습니다");
+        }
 
+        if(!"주문접수".equals(order.getOrderStatus().name())){
+            throw new OrderCancellationException("주문취소가 불가능합니다");
+        }
 
-    public OrderPageableResponse findOrderHistoryByMember(){
-        return null;
+        order.updateOrderStatus(OrderStatus.주문취소);
+
+        return new UpdateOrderResponse(order);
+
     }
 
-    public ReadOrderResponse findOrderDetailByMember(){
-        return null;
+
+    public Page<OrderPageableResponse> findOrderHistoryByMember(Long memberId, Pageable pageable){
+        Page<OrderPageableResponse> responses =  ordersRepository.findOrdersByMemberId(memberId, pageable);
+        return responses;
     }
 
-    public OrderPageableResponse findAllOrdersForOwner(){
-        return null;
+    public OrderResponse findOrderDetailByMember(Long memberId, Long orderId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NullPointerException("해당 멤버는 존재하지 않습니다"));
+
+        Orders order = ordersRepository.findById(orderId)
+                .orElseThrow(()->new NullPointerException("해당 주문건은 존재하지 않습니다"));
+
+        if(member.equals(order.getMember())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 주문만 확인할 수 있습니다");
+        }
+
+        return new OrderResponse(order);
     }
 
-    public ReadOrderResponse findOrderDetailForOwner(){
-        return null;
+    public Page<OrderPageableResponse> findAllOrdersForOwner(Long storeId, Pageable pageable){
+        Page<OrderPageableResponse> responses =  ordersRepository.findOrdersByStoreId(storeId, pageable);
+        return responses;
+    }
+
+    public OrderResponse findOrderDetailForOwner(Long memberId, Long storeId, Long orderId){
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NullPointerException("해당 멤버는 존재하지 않습니다"));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new NullPointerException("해당 가게는 존재하지 않습니다"));
+
+        Orders order = ordersRepository.findById(orderId)
+                .orElseThrow(()->new NullPointerException("해당 주문건은 존재하지 않습니다"));
+
+        if(!member.equals(store.getMember())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인 가게의 주문만 확인할 수 있습니다");
+        }
+
+        return new OrderResponse(order);
     }
 
 

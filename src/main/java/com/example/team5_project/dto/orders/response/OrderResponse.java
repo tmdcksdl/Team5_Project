@@ -5,11 +5,11 @@ import com.example.team5_project.entity.Orders;
 import java.time.LocalDateTime;
 
 
-public record CreateOrderResponse(Long id, Long memberId, Long productId, Integer quantity, Long totalPrice,
-                                  OrderStatus orderStatus, LocalDateTime createdAt, LocalDateTime updatedAt
+public record OrderResponse(Long id, Long memberId, Long productId, Integer quantity, Long totalPrice,
+                            OrderStatus orderStatus, LocalDateTime createdAt, LocalDateTime updatedAt
 ) {
 
-    public CreateOrderResponse(Orders order) {
+    public OrderResponse(Orders order) {
         this(
                 order.getId(),
                 order.getMember().getId(),
