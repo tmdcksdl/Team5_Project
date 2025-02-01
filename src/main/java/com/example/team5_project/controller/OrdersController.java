@@ -9,6 +9,7 @@ import com.example.team5_project.dto.orders.response.UpdateOrderResponse;
 import com.example.team5_project.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,12 @@ public class OrdersController {
     private final OrderService orderService;
 
     @PostMapping("/product/{productId}/order")
-    public ResponseEntity<CreateOrderRequest> createOrder(@RequestAttribute("id") Long MemberId,
+    public ResponseEntity<CreateOrderResponse> createOrder(@RequestAttribute("id") Long MemberId,
                                                           @PathVariable(name = "productId")Long productId,
                                                           @RequestBody CreateOrderRequest requestDto
     ){
         CreateOrderResponse response = orderService.createOrder(MemberId, productId, requestDto);
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/order/{ordersId}")
