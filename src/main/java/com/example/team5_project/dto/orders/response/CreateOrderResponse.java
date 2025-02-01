@@ -1,4 +1,24 @@
 package com.example.team5_project.dto.orders.response;
 
-public class CreateOrderResponse {
+import com.example.team5_project.common.enums.OrderStatus;
+import com.example.team5_project.entity.Orders;
+import java.time.LocalDateTime;
+
+
+public record CreateOrderResponse(Long id, Long memberId, Long productId, Integer quantity, Long totalPrice,
+                                  OrderStatus orderStatus, LocalDateTime createdAt, LocalDateTime updatedAt
+) {
+
+    public CreateOrderResponse(Orders order) {
+        this(
+                order.getId(),
+                order.getMember().getId(),
+                order.getProduct().getId(),
+                order.getQuantity(),
+                order.getTotalPrice(),
+                order.getOrderStatus(),
+                order.getCreatedAt(),
+                order.getUpdatedAt()
+        );
+    }
 }
