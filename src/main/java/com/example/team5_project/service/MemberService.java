@@ -4,9 +4,11 @@ import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.common.utils.PasswordEncoder;
 import com.example.team5_project.dto.member.request.SignInMemberRequest;
 import com.example.team5_project.dto.member.request.SignUpMemberRequest;
+import com.example.team5_project.dto.member.request.UpdateMemberRequest;
 import com.example.team5_project.dto.member.response.FindMemberResponse;
 import com.example.team5_project.dto.member.response.SignInMemberResponse;
 import com.example.team5_project.dto.member.response.SignUpMemberResponse;
+import com.example.team5_project.dto.member.response.UpdateMemberResponse;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,6 +74,29 @@ public class MemberService {
         }
 
         return new FindMemberResponse(
+                foundMember.getId(), foundMember.getName(),
+                foundMember.getEmail(), foundMember.getGender(),
+                foundMember.getAddress(), foundMember.getUserType(),
+                foundMember.getCreatedAt(), foundMember.getUpdatedAt()
+        );
+    }
+
+    // 회원 정보 수정 서비스
+    @Transactional
+    public UpdateMemberResponse updateMember(Long memberId, UpdateMemberRequest requestDto, HttpServletRequest servletRequest) {
+
+        Long id = (Long) servletRequest.getAttribute("id");
+
+        Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id의 회원을 찾을 수 없습니다."));
+
+        if (foundMember.getId() != id) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 id의 회원 정보를 수정할 수 없습니다.");
+        }
+
+        foundMember.updateMember(requestDto.getName(), requestDto.getAddress());
+
+        return new UpdateMemberResponse(
                 foundMember.getId(), foundMember.getName(),
                 foundMember.getEmail(), foundMember.getGender(),
                 foundMember.getAddress(), foundMember.getUserType(),

@@ -2,9 +2,11 @@ package com.example.team5_project.controller;
 
 import com.example.team5_project.dto.member.request.SignInMemberRequest;
 import com.example.team5_project.dto.member.request.SignUpMemberRequest;
+import com.example.team5_project.dto.member.request.UpdateMemberRequest;
 import com.example.team5_project.dto.member.response.FindMemberResponse;
 import com.example.team5_project.dto.member.response.SignInMemberResponse;
 import com.example.team5_project.dto.member.response.SignUpMemberResponse;
+import com.example.team5_project.dto.member.response.UpdateMemberResponse;
 import com.example.team5_project.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -49,5 +51,17 @@ public class MemberController {
         FindMemberResponse findMemberResponse = memberService.findMember(memberId, requestDto);
 
         return new ResponseEntity<>(findMemberResponse, HttpStatus.OK);
+    }
+
+    // 회원 정보 수정
+    @PatchMapping("/{memberId}")
+    public ResponseEntity<UpdateMemberResponse> updateMember(
+            @PathVariable Long memberId,
+            @RequestBody UpdateMemberRequest requestDto,
+            HttpServletRequest servletRequest
+    ) {
+        UpdateMemberResponse updateMemberResponse = memberService.updateMember(memberId, requestDto, servletRequest);
+
+        return new ResponseEntity<>(updateMemberResponse, HttpStatus.OK);
     }
 }

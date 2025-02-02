@@ -61,4 +61,9 @@ public class Member extends BaseEntity {
                 UserType.of(requestDto.getUser_type())
         );
     }
+
+    public void updateMember(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
 }
