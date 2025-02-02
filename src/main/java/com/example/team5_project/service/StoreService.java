@@ -3,7 +3,7 @@ package com.example.team5_project.service;
 import com.example.team5_project.dto.store.request.CreateStoreRequest;
 import com.example.team5_project.dto.store.request.UpdateStoreRequest;
 import com.example.team5_project.dto.store.response.CreateStoreResponse;
-import com.example.team5_project.dto.store.response.ReadingStoreResponse;
+import com.example.team5_project.dto.store.response.ReadStoreResponse;
 import com.example.team5_project.dto.store.response.UpdateStoreResponse;
 import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.StoreRepository;
@@ -38,12 +38,12 @@ public class StoreService {
         return new CreateStoreResponse(savedStore.getId(), savedStore.getName());
     }
 
-    public List<ReadingStoreResponse> getStore() {
+    public List<ReadStoreResponse> getStore() {
 
         List<Store> storeList = storeRepository.findAll();
 
-        List<ReadingStoreResponse> responseList = storeList.stream()
-                .map(store -> new ReadingStoreResponse(
+        List<ReadStoreResponse> responseList = storeList.stream()
+                .map(store -> new ReadStoreResponse(
                         store.getId(), store.getName()))
                 .collect(Collectors.toList());
 

@@ -3,7 +3,7 @@ package com.example.team5_project.controller;
 import com.example.team5_project.dto.store.request.CreateStoreRequest;
 import com.example.team5_project.dto.store.request.UpdateStoreRequest;
 import com.example.team5_project.dto.store.response.CreateStoreResponse;
-import com.example.team5_project.dto.store.response.ReadingStoreResponse;
+import com.example.team5_project.dto.store.response.ReadStoreResponse;
 import com.example.team5_project.dto.store.response.UpdateStoreResponse;
 import com.example.team5_project.service.StoreService;
 import java.util.List;
@@ -36,7 +36,7 @@ public class StoreController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReadingStoreResponse>> getStore() {
+    public ResponseEntity<List<ReadStoreResponse>> getStore() {
 
         return new ResponseEntity<>(storeService.getStore(), HttpStatus.OK);
     }
