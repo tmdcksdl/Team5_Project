@@ -10,19 +10,23 @@ import org.springframework.data.repository.query.Param;
 
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
 
-    @Query(
-            "SELECT new com.example.team5_project.dto.orders.response.OrderPageableResponse(" +
-                    "o.id, m.name,p.name,o.orderStatus ) " +
-                    "FROM Orders o JOIN o.member m JOIN o.product p "+
-                    "WHERE m.id = :memberId"
-    )
-    Page<OrderPageableResponse> findOrdersByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
     @Query(
             "SELECT new com.example.team5_project.dto.orders.response.OrderPageableResponse(" +
                     "o.id, m.name,p.name,o.orderStatus ) " +
-                    "FROM Orders o JOIN o.member m JOIN o.product p "+
-                    "WHERE p.store.id = :storeId"
+                    "FROM Orders o JOIN o.member m JOIN o.product p " +
+                    "WHERE m.id = :memberId " +
+                    "order by o.updatedAt"
+    )
+    Page<OrderPageableResponse> findOrdersByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+
+    @Query(
+            "SELECT new com.example.team5_project.dto.orders.response.OrderPageableResponse(" +
+                    "o.id, m.name,p.name,o.orderStatus ) " +
+                    "FROM Orders o JOIN o.member m JOIN o.product p " +
+                    "WHERE p.store.id = :storeId " +
+                    "order by o.updatedAt"
     )
     Page<OrderPageableResponse> findOrdersByStoreId(@Param("storeId") Long storeId, Pageable pageable);
 

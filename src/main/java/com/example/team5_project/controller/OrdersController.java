@@ -30,7 +30,7 @@ public class OrdersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PatchMapping("/order/{ordersId}")
+    @PatchMapping("/order/{orderId}")
     public ResponseEntity<UpdateOrderResponse> updateOrderStatus(@RequestAttribute("id")Long memberId,
                                                                  @PathVariable(name ="orderId")Long orderId,
                                                                  @RequestBody UpdateOrderRequest requestDto
@@ -39,11 +39,11 @@ public class OrdersController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/order/{ordersId}")
-    public ResponseEntity<UpdateOrderResponse> cancelOrder(@RequestAttribute("id")Long memberId,
+    @DeleteMapping("/order/{orderId}")
+    public ResponseEntity<UpdateOrderResponse> cancelOrder(//@RequestAttribute("id")Long memberId,
                                             @PathVariable(name ="orderId")Long orderId
     ){
-        UpdateOrderResponse response = orderService.cancelOrder(memberId, orderId);
+        UpdateOrderResponse response = orderService.cancelOrder(1L, orderId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -52,13 +52,13 @@ public class OrdersController {
                                                                                 @RequestParam(name = "size",defaultValue = "5")int size,
                                                                                 @RequestParam(name = "page", defaultValue = "1")int page
     ){
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         Page<OrderPageableResponse> response = orderService.findOrderHistoryByMember(memberId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/order/{ordersId}")
+    @GetMapping("/order/{orderId}")
     public ResponseEntity<OrderResponse> findOrderDetailByMember(@RequestAttribute("id")Long memberId,
                                                                      @PathVariable(name ="orderId")Long orderId
     ){
@@ -69,10 +69,11 @@ public class OrdersController {
     @GetMapping("/store/{storeId}/orders")
     public ResponseEntity<Page<OrderPageableResponse>> findAllOrdersForOwner (@RequestAttribute("id")Long memberId,
                                                                               @RequestParam(name = "size",defaultValue = "5")int size,
-                                                                              @RequestParam(name = "page", defaultValue = "1")int page)
-    {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<OrderPageableResponse> response = orderService.findAllOrdersForOwner(memberId, pageable);
+                                                                              @RequestParam(name = "page", defaultValue = "1")int page,
+                                                                              @PathVariable(name = "storeId") Long storeId
+    ){
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<OrderPageableResponse> response = orderService.findAllOrdersForOwner(memberId,storeId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

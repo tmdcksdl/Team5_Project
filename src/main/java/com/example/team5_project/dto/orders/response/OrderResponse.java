@@ -5,7 +5,7 @@ import com.example.team5_project.entity.Orders;
 import java.time.LocalDateTime;
 
 
-public record OrderResponse(Long id, Long memberId, Long productId, Integer quantity, Long totalPrice,
+public record OrderResponse(Long id, Long memberId, Long productId, Integer quantity, Integer totalPrice,
                             OrderStatus orderStatus, LocalDateTime createdAt, LocalDateTime updatedAt
 ) {
 

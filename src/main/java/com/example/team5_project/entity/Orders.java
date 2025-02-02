@@ -38,7 +38,7 @@ public class Orders extends BaseEntity {
 
     @Comment("총 금액")
     @Column(name = "total_price")
-    private Long totalPrice;
+    private Integer totalPrice;
 
     @Comment("주문 상태")
     @Enumerated(EnumType.STRING)
@@ -51,6 +51,7 @@ public class Orders extends BaseEntity {
         this.product = product;
         this.orderStatus = orderStatus;
         this.quantity = quantity;
+        this.totalPrice = product.getPrice() * quantity;
     }
 
     public void updateOrderStatus(OrderStatus orderStatus){
