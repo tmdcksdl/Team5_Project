@@ -24,9 +24,6 @@ public class StoreController {
     public ResponseEntity<CreateStoreResponse> createStore(
             @RequestBody CreateStoreRequest requestDto
     ) {
-
-        CreateStoreResponse store = storeService.createStore(requestDto);
-
-        return new ResponseEntity<>(store, HttpStatus.CREATED);
+        return new ResponseEntity<>(storeService.createStore(requestDto), HttpStatus.CREATED);
     }
 }
