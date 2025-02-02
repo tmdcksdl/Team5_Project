@@ -37,6 +37,10 @@ public class Store extends BaseEntity {
         return new Store(name);
     }
 
+    public void update(String name) {
+        this.name = name;
+    }
+
     private Store(String name){
         this.name = name;
     }
