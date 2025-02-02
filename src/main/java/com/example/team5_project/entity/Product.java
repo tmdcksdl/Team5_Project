@@ -20,7 +20,7 @@ public class Product extends BaseEntity {
     @Comment("상품 식별자")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
+    @Column(columnDefinition = "BIGINT", name = "product_id")
     private Long id;
 
     @Comment("상품명")

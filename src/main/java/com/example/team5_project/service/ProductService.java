@@ -85,4 +85,14 @@ public class ProductService {
                 foundProduct.getId(), foundProduct.getName(),
                 foundProduct.getPrice(), foundProduct.getStock());
     }
+
+    @Transactional
+    public void deleteProduct(Long productId) {
+
+        Product foundProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException());
+
+        productRepository.delete(foundProduct);
+
+    }
 }
