@@ -42,9 +42,10 @@ public class ProductController {
     }
 
     @GetMapping("/{storesId}/products/{productId}")
-    public ResponseEntity<ReadProductResponse> getProduct() {
+    public ResponseEntity<ReadProductResponse> getProduct(
+            @PathVariable Long productId
+    ) {
 
-        return new ResponseEntity<>(productService.getProduct())
-
+        return new ResponseEntity<>(productService.getProduct(productId), HttpStatus.OK);
     }
 }

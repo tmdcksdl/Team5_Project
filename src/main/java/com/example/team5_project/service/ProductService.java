@@ -53,4 +53,14 @@ public class ProductService {
         return responseList;
 
     }
+
+    public ReadProductResponse getProduct(Long productId) {
+
+        Product foundProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException());
+
+        return new ReadProductResponse(
+                foundProduct.getId(), foundProduct.getName(),
+                foundProduct.getPrice(), foundProduct.getStock(), foundProduct.getTotalLikes());
+    }
 }
