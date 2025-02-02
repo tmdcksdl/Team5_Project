@@ -1,5 +1,6 @@
 package com.example.team5_project.controller;
 
+import com.example.team5_project.common.aspect.AuthCheck;
 import com.example.team5_project.dto.member.request.SignInMemberRequest;
 import com.example.team5_project.dto.member.request.SignUpMemberRequest;
 import com.example.team5_project.dto.member.request.UpdateMemberRequest;
@@ -43,6 +44,7 @@ public class MemberController {
     }
 
     // 회원 정보 조회
+    @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{memberId}")
     public ResponseEntity<FindMemberResponse> findMember(
             @PathVariable Long memberId,
@@ -54,6 +56,7 @@ public class MemberController {
     }
 
     // 회원 정보 수정
+    @AuthCheck({"OWNER", "USER"})
     @PatchMapping("/{memberId}")
     public ResponseEntity<UpdateMemberResponse> updateMember(
             @PathVariable Long memberId,
@@ -66,6 +69,7 @@ public class MemberController {
     }
 
     // 회원 탈퇴
+    @AuthCheck({"OWNER", "USER"})
     @DeleteMapping("/{memberId}")
     public ResponseEntity<Void> deleteMember(
             @PathVariable Long memberId,
