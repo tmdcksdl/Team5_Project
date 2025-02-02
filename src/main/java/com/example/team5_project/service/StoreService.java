@@ -31,7 +31,7 @@ public class StoreService {
 
         return new CreateStoreResponse(savedStore.getId(), savedStore.getName());
     }
-    //TODO : 역할에 따른 데이터를 어떻게 줄건지는 미완성
+
     public List<ReadingStoreResponse> getStore() {
 
         List<Store> storeList = storeRepository.findAll();
