@@ -50,7 +50,7 @@ public class HeartService {
 
             Heart savedHeart = new Heart(member, product);
             heartRepository.save(savedHeart);
-            log.info("상품 아이디: {} 좋아요 등록", productId);
+            log.info("좋아요 등록 완료 >>> 상품 아이디: {}", productId);
 
             // todo productRepository.좋아요 수 1증가
             return HttpStatus.CREATED;
@@ -58,7 +58,7 @@ public class HeartService {
         // 좋아요 취소
         else {
             heartRepository.delete(heart);
-            log.info("상품 아이디: {} 좋아요 취소", productId);
+            log.info("좋아요 취소 완료 >>> 상품 아이디: {}", productId);
 
             return HttpStatus.NO_CONTENT;
         }
