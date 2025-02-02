@@ -74,7 +74,6 @@ public class StoreService {
                 .orElseThrow(() -> new RuntimeException());
 
         storeRepository.delete(foundStore);
-        log.info("Found store: {}, isDeleted: {}", foundStore, foundStore.isDeleted());
 
     }
 }
