@@ -1,5 +1,7 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.dto.heart.response.HeartResponse;
+import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.entity.Heart;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.entity.Product;
@@ -9,6 +11,9 @@ import com.example.team5_project.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +52,7 @@ public class HeartService {
             heartRepository.save(savedHeart);
             log.info("상품 아이디: {} 좋아요 등록", productId);
 
+            // todo productRepository.좋아요 수 1증가
             return HttpStatus.CREATED;
         }
         // 좋아요 취소
@@ -56,6 +62,22 @@ public class HeartService {
 
             return HttpStatus.NO_CONTENT;
         }
+    }
 
+    @Transactional
+    public Page<HeartResponse> getHeartList(Long memberId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<Heart> hearts = heartRepository.findHearts(memberId, pageable);
+
+        return hearts.map(heart -> new HeartResponse(
+            heart.getId(),
+            memberId,
+            heart.getProduct().getId(),
+            new ProductResponse(
+                heart.getProduct().getId(), heart.getProduct().getName(),
+                heart.getProduct().getPrice(), heart.getProduct().getTotalLikes()),
+            heart.getCreatedAt()
+        ));
     }
 }
