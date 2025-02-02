@@ -29,6 +29,17 @@ public class Store extends BaseEntity {
 
     @Comment("멤버 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id")
     private Member member;
+
+
+    public static Store create(String name) {
+        return new Store(name);
+    }
+
+    private Store(String name){
+        this.name = name;
+    }
+
+
 }
