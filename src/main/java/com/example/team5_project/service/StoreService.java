@@ -17,6 +17,11 @@ public class StoreService {
 
     public CreateStoreResponse createStore(CreateStoreRequest requestDto){
 
+        //TODO 예외처리 어떻게 할지 확인하기
+        if(storeRepository.existsByName(requestDto.name())){
+
+        }
+
         Store createdStore = Store.create(requestDto.name());
 
         Store savedStore = storeRepository.save(createdStore);
