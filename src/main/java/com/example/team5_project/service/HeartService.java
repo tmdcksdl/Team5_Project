@@ -9,6 +9,7 @@ import com.example.team5_project.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -22,7 +23,7 @@ public class HeartService {
     // todo jwt 관련... ex) jwtUtil
 
     @Transactional
-    public void toggleHeart(
+    public HttpStatus toggleHeart(
         Long memberId,
         Long productId
     ) {
@@ -45,11 +46,15 @@ public class HeartService {
             Heart savedHeart = new Heart(member, product);
             heartRepository.save(savedHeart);
             log.info("상품 아이디: {} 좋아요 등록", productId);
+
+            return HttpStatus.CREATED;
         }
         // 좋아요 취소
         else {
             heartRepository.delete(heart);
             log.info("상품 아이디: {} 좋아요 취소", productId);
+
+            return HttpStatus.NO_CONTENT;
         }
 
     }

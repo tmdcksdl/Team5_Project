@@ -19,8 +19,25 @@ public class HeartController {
 
     private final HeartService heartService;
 
-    // 상품 좋아요는 등록<->취소 토글식으로 실행됨
+    /**
+     * 상품 좋아요 등록/취소 API
+     * - 등록<->취소 토글식으로 실행됨
+     * @param memberId
+     * @param productId
+     * @return
+     */
 
+    // jwt 완성 전 api 작동 실험용
+    @PostMapping("/products/{productId}/heart")
+    public ResponseEntity<Void> toggleHeart(
+        @RequestParam Long memberId,
+        @PathVariable("productId") Long productId
+    ) {
+
+        HttpStatus heartResult = heartService.toggleHeart(memberId, productId);
+
+        return new ResponseEntity<>(heartResult);
+    }
 
     // 실제 api (대략적으로)
 //    @AuthCheck("USER")
@@ -37,15 +54,11 @@ public class HeartController {
 //        return new ResponseEntity<>(HttpStatus.OK);
 //    }
 
-    // jwt 완성 전 api 작동 실험용
-    @PostMapping("/products/{productId}/heart")
-    public ResponseEntity<Void> toggleHeart(
-        @RequestParam Long memberId,
-        @PathVariable("productId") Long productId
-    ) {
-        heartService.toggleHeart(memberId, productId);
+    /**
+     * 좋아요 목록 조회
+     */
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+
+
 
 }
