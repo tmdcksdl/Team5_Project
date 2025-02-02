@@ -25,6 +25,7 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
+//    private final ProductRepository2 productRepository2;
     // todo jwt 관련... ex) jwtUtil
 
     @Transactional
@@ -50,15 +51,22 @@ public class HeartService {
 
             Heart savedHeart = new Heart(member, product);
             heartRepository.save(savedHeart);
-            log.info("좋아요 등록 완료 >>> 상품 아이디: {}", productId);
 
-            // todo productRepository.좋아요 수 1증가
+            log.info("좋아요 등록 완료 >>> 상품 아이디: {}", productId);
+            // todo product repository pull 하고나서 좋아요 수 +1 구현
+            // product 엔티티 좋아요 수 +1
+//            productRepository.increaseTotalLikes(productId);
+
             return HttpStatus.CREATED;
         }
         // 좋아요 취소
         else {
             heartRepository.delete(heart);
+
             log.info("좋아요 취소 완료 >>> 상품 아이디: {}", productId);
+            // todo product repository pull 하고나서 좋아요 수 -1 구현
+            // product 엔티티 좋아요 수 +2
+//            productRepository.decreaseTotalLikes(productId);
 
             return HttpStatus.NO_CONTENT;
         }
