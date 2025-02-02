@@ -2,6 +2,7 @@ package com.example.team5_project.entity;
 
 import com.example.team5_project.common.enums.Gender;
 import com.example.team5_project.common.enums.UserType;
+import com.example.team5_project.dto.member.request.SignUpMemberRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,4 +51,14 @@ public class Member extends BaseEntity {
     @Column(name = "user_type", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
+
+
+    public static Member of(SignUpMemberRequest requestDto, String encodedPassword) {
+        return new Member(
+                null, requestDto.getName(),
+                requestDto.getEmail(), encodedPassword,
+                Gender.of(requestDto.getGender()), requestDto.getAddress(),
+                UserType.of(requestDto.getUser_type())
+        );
+    }
 }
