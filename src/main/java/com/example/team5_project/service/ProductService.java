@@ -40,7 +40,7 @@ public class ProductService {
 
     }
 
-    public List<ReadProductResponse> getProduct() {
+    public List<ReadProductResponse> getProducts() {
 
         List<Product> productList = productRepository.findAll();
 

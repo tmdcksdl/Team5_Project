@@ -36,8 +36,15 @@ public class ProductController {
     }
 
     @GetMapping("/{storesId}/products")
-    public ResponseEntity<List<ReadProductResponse>> getProduct() {
+    public ResponseEntity<List<ReadProductResponse>> getProducts() {
 
-        return new ResponseEntity<>(productService.getProduct(), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{storesId}/products/{productId}")
+    public ResponseEntity<ReadProductResponse> getProduct() {
+
+        return new ResponseEntity<>(productService.getProduct())
+
     }
 }
