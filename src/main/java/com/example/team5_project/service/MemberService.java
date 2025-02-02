@@ -4,13 +4,16 @@ import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.common.utils.PasswordEncoder;
 import com.example.team5_project.dto.member.request.SignInMemberRequest;
 import com.example.team5_project.dto.member.request.SignUpMemberRequest;
+import com.example.team5_project.dto.member.response.FindMemberResponse;
 import com.example.team5_project.dto.member.response.SignInMemberResponse;
 import com.example.team5_project.dto.member.response.SignUpMemberResponse;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -53,5 +56,26 @@ public class MemberService {
         );
 
         return new SignInMemberResponse(token);
+    }
+
+    // 회원 정보 조회 서비스
+    @Transactional(readOnly = true)
+    public FindMemberResponse findMember(Long memberId, HttpServletRequest requestDto) {
+
+        Long id = (Long) requestDto.getAttribute("id");
+
+        Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id의 회원을 찾을 수 없습니다."));
+
+        if (foundMember.getId() != id) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 id의 회원 정보를 조회할 수 없습니다.");
+        }
+
+        return new FindMemberResponse(
+                foundMember.getId(), foundMember.getName(),
+                foundMember.getEmail(), foundMember.getGender(),
+                foundMember.getAddress(), foundMember.getUserType(),
+                foundMember.getCreatedAt(), foundMember.getUpdatedAt()
+        );
     }
 }
