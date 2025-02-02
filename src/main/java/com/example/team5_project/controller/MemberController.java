@@ -64,4 +64,15 @@ public class MemberController {
 
         return new ResponseEntity<>(updateMemberResponse, HttpStatus.OK);
     }
+
+    // 회원 탈퇴
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<Void> deleteMember(
+            @PathVariable Long memberId,
+            HttpServletRequest servletRequest
+    ) {
+        memberService.deleteMember(memberId, servletRequest);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -103,4 +103,20 @@ public class MemberService {
                 foundMember.getCreatedAt(), foundMember.getUpdatedAt()
         );
     }
+
+    // 회원 탈퇴 서비스
+    @Transactional
+    public void deleteMember(Long memberId, HttpServletRequest servletRequest) {
+
+        Long id = (Long) servletRequest.getAttribute("id");
+
+        Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id의 회원을 찾을 수 없습니다."));
+
+        if (foundMember.getId() != id) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 id의 회원을 삭제할 수 없습니다.");
+        }
+
+        memberRepository.delete(foundMember);
+    }
 }
