@@ -2,10 +2,13 @@ package com.example.team5_project.controller;
 
 import com.example.team5_project.dto.product.request.CreateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
+import com.example.team5_project.dto.product.response.ReadProductResponse;
 import com.example.team5_project.service.ProductService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +22,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/{storesId}/product")
+    @PostMapping("/{storesId}/products")
     public ResponseEntity<CreateProductResponse> createProduct(
             @RequestBody CreateProductRequest requestDto,
             @PathVariable Long storesId
@@ -30,5 +33,11 @@ public class ProductController {
 
         return new ResponseEntity<>(product, HttpStatus.CREATED);
 
+    }
+
+    @GetMapping("/{storesId}/products")
+    public ResponseEntity<List<ReadProductResponse>> getProduct() {
+
+        return new ResponseEntity<>(productService.getProduct(), HttpStatus.OK);
     }
 }
