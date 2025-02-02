@@ -1,12 +1,15 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
 import com.example.team5_project.dto.product.response.ReadProductResponse;
+import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.entity.Product;
 import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.StoreRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,5 +65,24 @@ public class ProductService {
         return new ReadProductResponse(
                 foundProduct.getId(), foundProduct.getName(),
                 foundProduct.getPrice(), foundProduct.getStock(), foundProduct.getTotalLikes());
+    }
+
+    @Transactional
+    public UpdateProductResponse updateProduct(Long productId, UpdateProductRequest requestDto) {
+
+        Optional<Product> byName = productRepository.findByName(requestDto.name());
+
+        if (byName.isPresent()) {
+            throw new RuntimeException();
+        }
+
+        Product foundProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException());
+
+        foundProduct.update(requestDto.name(), requestDto.price(), requestDto.stock());
+
+        return new UpdateProductResponse(
+                foundProduct.getId(), foundProduct.getName(),
+                foundProduct.getPrice(), foundProduct.getStock());
     }
 }
