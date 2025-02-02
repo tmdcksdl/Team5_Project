@@ -66,4 +66,15 @@ public class StoreService {
 
         return new UpdateStoreResponse(storeId, foundStore.getName());
     }
+
+    @Transactional
+    public void deleteStore(Long storeId) {
+
+        Store foundStore = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException());
+
+        storeRepository.delete(foundStore);
+        log.info("Found store: {}, isDeleted: {}", foundStore, foundStore.isDeleted());
+
+    }
 }

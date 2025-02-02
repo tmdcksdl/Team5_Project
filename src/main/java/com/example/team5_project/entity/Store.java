@@ -14,13 +14,13 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "is_deleted = false")
-@SQLDelete(sql = "UPDATE store SET is_deleted = true WHERE store_id = ?")
+@SQLDelete(sql = "UPDATE store SET is_Deleted = true WHERE store_id = ?")
 public class Store extends BaseEntity {
 
     @Comment("가게 식별자")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "BIGINT")
+    @Column(columnDefinition = "BIGINT", name = "store_id")
     private Long id;
 
     @Comment("가게명")
