@@ -1,4 +1,4 @@
 package com.example.team5_project.dto.product.response;
 
-public class CreateProductResponse {
+public record CreateProductResponse(String name, int price, int stock) {
 }

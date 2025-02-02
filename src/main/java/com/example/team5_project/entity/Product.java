@@ -40,4 +40,15 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
+    public static Product create(String name, int price, int stock, Store store){
+        return new Product(name, price, stock, store);
+    }
+
+    private Product(String name, int price, int stock, Store store){
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.store = store;
+    }
+
 }
