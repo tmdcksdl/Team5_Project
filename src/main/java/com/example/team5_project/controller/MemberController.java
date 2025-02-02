@@ -1,6 +1,8 @@
 package com.example.team5_project.controller;
 
+import com.example.team5_project.dto.member.request.SignInMemberRequest;
 import com.example.team5_project.dto.member.request.SignUpMemberRequest;
+import com.example.team5_project.dto.member.response.SignInMemberResponse;
 import com.example.team5_project.dto.member.response.SignUpMemberResponse;
 import com.example.team5_project.service.MemberService;
 import jakarta.validation.Valid;
@@ -27,5 +29,15 @@ public class MemberController {
         SignUpMemberResponse signUpMemberResponse = memberService.signUpMember(requestDto);
 
         return new ResponseEntity<>(signUpMemberResponse, HttpStatus.CREATED);
+    }
+
+    // 로그인
+    @PostMapping("/sign-in")
+    public ResponseEntity<SignInMemberResponse> signInMember(
+            @Valid @RequestBody SignInMemberRequest requestDto
+    ) {
+        SignInMemberResponse signInMemberResponse = memberService.signInMember(requestDto);
+
+        return new ResponseEntity<>(signInMemberResponse, HttpStatus.OK);
     }
 }
