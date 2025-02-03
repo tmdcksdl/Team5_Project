@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-public class SignUpMemberResponse {
+public class FindMemberResponse {
 
     private Long id;
     private String name;
@@ -18,4 +18,5 @@ public class SignUpMemberResponse {
     private String address;
     private UserType user_type;
     private LocalDateTime create_at;
+    private LocalDateTime updated_at;
 }
