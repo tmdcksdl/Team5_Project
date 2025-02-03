@@ -46,6 +46,7 @@ public class HeartController {
      * - 좋아요 등록일 최신순(내림차순)
      */
 
+    @AuthCheck("USER")
     @GetMapping("/hearts")
     public ResponseEntity<Page<HeartResponse>> getHeartList(
         HttpServletRequest request,

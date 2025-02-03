@@ -1,17 +1,20 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
-import com.example.team5_project.dto.product.response.ReadProductResponse;
+import com.example.team5_project.dto.product.response.OwnerReadProductResponse;
+import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
+import com.example.team5_project.dto.product.response.UserReadProductResponse;
 import com.example.team5_project.entity.Product;
 import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.StoreRepository;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public CreateProductResponse createProduct(Long storeId, String name, int price, int stock) {
@@ -29,7 +33,7 @@ public class ProductService {
         Store foundStore = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException());
 
-        if (productRepository.findByName(name).isPresent()){
+        if (productRepository.findByName(name).isPresent()) {
             throw new RuntimeException();
         }
 
@@ -43,28 +47,48 @@ public class ProductService {
 
     }
 
-    public List<ReadProductResponse> getProducts() {
+    public Page<? extends ProductResponse> getProducts(Pageable pageable, String token) {
 
-        List<Product> productList = productRepository.findAll();
+        String userType = jwtUtil.extractUserType(token);
 
-        List<ReadProductResponse> responseList = productList.stream()
-                .map(product -> new ReadProductResponse(
-                        product.getId(), product.getName(),
-                        product.getPrice(), product.getStock(), product.getTotalLikes()))
-                .collect(Collectors.toList());
+        Page<Product> productPage = productRepository.findproducts(pageable);
 
-        return responseList;
+        if (userType.equalsIgnoreCase("USER")) {
+            return productPage
+                    .map(product -> new UserReadProductResponse(
+                            product.getId(), product.getName(),
+                            product.getPrice(), product.getTotalLikes()));
+        }
 
+        if (userType.equalsIgnoreCase("OWNER")) {
+            return productPage
+                    .map(product -> new OwnerReadProductResponse(
+                            product.getId(), product.getName(),
+                            product.getPrice(), product.getStock(), product.getTotalLikes()));
+        }
+        throw new IllegalArgumentException("유효하지 않은 사용자 유형입니다.");
     }
 
-    public ReadProductResponse getProduct(Long productId) {
+    public ProductResponse getProduct(Long productId, String token) {
+
+        String userType = jwtUtil.extractUserType(token);
 
         Product foundProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException());
 
-        return new ReadProductResponse(
-                foundProduct.getId(), foundProduct.getName(),
-                foundProduct.getPrice(), foundProduct.getStock(), foundProduct.getTotalLikes());
+        if (userType.equalsIgnoreCase("USER")) {
+            return new UserReadProductResponse(
+                    foundProduct.getId(), foundProduct.getName(),
+                    foundProduct.getPrice(), foundProduct.getTotalLikes());
+        }
+
+        if (userType.equalsIgnoreCase("OWNER")) {
+            return new OwnerReadProductResponse(
+                    foundProduct.getId(), foundProduct.getName(),
+                    foundProduct.getPrice(), foundProduct.getStock(), foundProduct.getTotalLikes());
+        }
+
+        throw new IllegalArgumentException("유효하지 않은 사용자 유형입니다.");
     }
 
     @Transactional

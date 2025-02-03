@@ -10,11 +10,11 @@ import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.MemberRepository;
 import com.example.team5_project.repository.StoreRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,16 +47,13 @@ public class StoreService {
         return new CreateStoreResponse(savedStore.getId(), savedStore.getName());
     }
 
-    public List<ReadStoreResponse> getStore() {
+    public Page<ReadStoreResponse> getStore(Pageable pageable) {
 
-        List<Store> storeList = storeRepository.findAll();
+        Page<Store> storePage = storeRepository.findStores(pageable);
 
-        List<ReadStoreResponse> responseList = storeList.stream()
-                .map(store -> new ReadStoreResponse(
-                        store.getId(), store.getName()))
-                .collect(Collectors.toList());
-
-        return responseList;
+        return storePage.map(store -> new ReadStoreResponse(
+                store.getId(), store.getName()
+        ));
     }
 
     @Transactional
