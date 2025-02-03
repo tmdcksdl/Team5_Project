@@ -37,6 +37,7 @@ public class CheckUserTypeAspect {
         }
 
         log.info("권한 확인 완료. 요청 권한: {}, 필요 권한: {}", userType, authCheck.value());
+
         return joinPoint.proceed();
     }
 }
