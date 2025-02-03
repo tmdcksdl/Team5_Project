@@ -34,6 +34,7 @@ public class JwtUtil {
 
     // 정보 추출
     private Claims extractAllClaims(String token) {
+        token = token.replace("Bearer ", ""); // 앞에 붙는 'Bearer ' 제거
 
         return Jwts.parser()
                 .setSigningKey(key)

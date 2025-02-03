@@ -1,4 +1,4 @@
 package com.example.team5_project.dto.product.request;
 
-public class CreateProductRequest {
+public record CreateProductRequest(String name, int price, int stock) {
 }
