@@ -50,12 +50,27 @@ public class ProductController {
     public ResponseEntity<Page<? extends ProductResponse>> getProducts(
             @RequestParam(name = "size",defaultValue = "5")int size,
             @RequestParam(name = "page", defaultValue = "1") int page,
+            @PathVariable(name = "storesId") Long storeId,
             HttpServletRequest request) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
         String token = extractToken(request);
-        return new ResponseEntity<>(productService.getProducts(pageable, token), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProducts(pageable, token, storeId), HttpStatus.OK);
+    }
+
+    @AuthCheck({"OWNER", "USER"})
+    @GetMapping("/v1/products")
+    public ResponseEntity<Page<? extends ProductResponse>> searchByProductName(
+            @RequestParam(name = "size",defaultValue = "5")int size,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            HttpServletRequest request,
+            @RequestParam String keyword) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        String token = extractToken(request);
+        return new ResponseEntity<>(productService.searchByProductName(pageable, token, keyword), HttpStatus.OK);
     }
 
     @AuthCheck({"OWNER", "USER"})

@@ -44,8 +44,16 @@ public class Product extends BaseEntity {
     @Column(name = "total_likes")
     private int totalLikes;
 
+    @Comment("조회수")
+    @Column(name = "total_view_counts")
+    private int totalViewCounts;
+
     public static Product create(String name, int price, int stock, Store store){
         return new Product(name, price, stock, store);
+    }
+
+    public void addViewCount() {
+        this.totalViewCounts += 1;
     }
 
     private Product(String name, int price, int stock, Store store){
