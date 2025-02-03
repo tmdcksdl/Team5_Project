@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "is_deleted = false")
-@SQLDelete(sql = "UPDATE store SET is_deleted = true WHERE store_id = ?")
+@SQLDelete(sql = "UPDATE store SET is_deleted = true WHERE id = ?")
 public class Store extends BaseEntity {
 
     @Comment("가게 식별자")
