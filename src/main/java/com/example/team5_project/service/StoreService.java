@@ -5,8 +5,11 @@ import com.example.team5_project.dto.store.request.UpdateStoreRequest;
 import com.example.team5_project.dto.store.response.CreateStoreResponse;
 import com.example.team5_project.dto.store.response.ReadStoreResponse;
 import com.example.team5_project.dto.store.response.UpdateStoreResponse;
+import com.example.team5_project.entity.Member;
 import com.example.team5_project.entity.Store;
+import com.example.team5_project.repository.MemberRepository;
 import com.example.team5_project.repository.StoreRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,16 +25,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public CreateStoreResponse createStore(CreateStoreRequest requestDto) {
+    public CreateStoreResponse createStore(CreateStoreRequest requestDto, HttpServletRequest request) {
+
+        Long memberId = (Long) request.getAttribute("id");
+
+        Member foundMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException());
 
         //TODO 예외처리 어떻게 할지 확인하기
         if (storeRepository.existsByName(requestDto.name())) {
             throw new RuntimeException();
         }
 
-        Store createdStore = Store.create(requestDto.name());
+        Store createdStore = Store.create(requestDto.name(), foundMember);
 
         Store savedStore = storeRepository.save(createdStore);
 

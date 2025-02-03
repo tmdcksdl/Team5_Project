@@ -33,15 +33,16 @@ public class Store extends BaseEntity {
     private Member member;
 
 
-    public static Store create(String name) {
-        return new Store(name);
+    public static Store create(String name, Member member) {
+        return new Store(name, member);
     }
 
     public void update(String name) {
         this.name = name;
     }
 
-    private Store(String name){
+    private Store(String name, Member member){
         this.name = name;
+        this.member = member;
     }
 }

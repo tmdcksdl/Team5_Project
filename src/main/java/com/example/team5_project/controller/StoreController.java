@@ -7,6 +7,7 @@ import com.example.team5_project.dto.store.response.CreateStoreResponse;
 import com.example.team5_project.dto.store.response.ReadStoreResponse;
 import com.example.team5_project.dto.store.response.UpdateStoreResponse;
 import com.example.team5_project.service.StoreService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +33,10 @@ public class StoreController {
     @AuthCheck({"OWNER"})
     @PostMapping
     public ResponseEntity<CreateStoreResponse> createStore(
-            @RequestBody CreateStoreRequest requestDto
+            @RequestBody CreateStoreRequest requestDto,
+            HttpServletRequest httpServletRequest
     ) {
-        return new ResponseEntity<>(storeService.createStore(requestDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(storeService.createStore(requestDto, httpServletRequest), HttpStatus.CREATED);
     }
 
     @AuthCheck({"OWNER", "USER"})
