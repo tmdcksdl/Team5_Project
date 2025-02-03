@@ -52,7 +52,7 @@ public class OrdersController {
                                                                                 @RequestParam(name = "size",defaultValue = "5")int size,
                                                                                 @RequestParam(name = "page", defaultValue = "1")int page
     ){
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<OrderPageableResponse> response = orderService.findOrderHistoryByMember(memberId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -72,7 +72,7 @@ public class OrdersController {
                                                                               @RequestParam(name = "page", defaultValue = "1")int page,
                                                                               @PathVariable(name = "storeId") Long storeId
     ){
-        Pageable pageable = PageRequest.of(page-1, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<OrderPageableResponse> response = orderService.findAllOrdersForOwner(memberId,storeId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
