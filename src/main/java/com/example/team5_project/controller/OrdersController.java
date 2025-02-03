@@ -1,5 +1,6 @@
 package com.example.team5_project.controller;
 
+import com.example.team5_project.common.aspect.AuthCheck;
 import com.example.team5_project.dto.orders.request.CreateOrderRequest;
 import com.example.team5_project.dto.orders.request.UpdateOrderRequest;
 import com.example.team5_project.dto.orders.response.OrderResponse;
@@ -41,10 +42,10 @@ public class OrdersController {
     }
 
     @DeleteMapping("/order/{orderId}")
-    public ResponseEntity<UpdateOrderResponse> cancelOrder(//@RequestAttribute("id")Long memberId,
+    public ResponseEntity<UpdateOrderResponse> cancelOrder(@RequestAttribute("id")Long memberId,
                                                            @PathVariable(name ="orderId")Long orderId
     ){
-        UpdateOrderResponse response = orderService.cancelOrder(1L, orderId);
+        UpdateOrderResponse response = orderService.cancelOrder(memberId, orderId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -67,6 +68,7 @@ public class OrdersController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @AuthCheck({"OWNER"})
     @GetMapping("/store/{storeId}/orders")
     public ResponseEntity<Page<OrderPageableResponse>> findAllOrdersForOwner (@RequestAttribute("id")Long memberId,
                                                                               @RequestParam(name = "size",defaultValue = "5")int size,
@@ -79,6 +81,7 @@ public class OrdersController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @AuthCheck({"OWNER"})
     @GetMapping("/store/{storeId}/order/{orderId}")
     public ResponseEntity<OrderResponse> findOrderDetailForOwner(@RequestAttribute("id")Long memberId,
                                                                  @PathVariable(name ="storeId")Long storeId,
