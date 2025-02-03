@@ -2,6 +2,7 @@ package com.example.team5_project.service;
 
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
+import com.example.team5_project.dto.product.response.PageableProductResponse;
 import com.example.team5_project.dto.product.response.ReadProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.entity.Product;
@@ -12,9 +13,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -94,5 +99,15 @@ public class ProductService {
 
         productRepository.delete(foundProduct);
 
+    }
+
+    public Page<PageableProductResponse> findByPriceRange(Pageable pageable, Integer minPrice, Integer maxPrice){
+       Long startAt = System.currentTimeMillis();
+      Page<PageableProductResponse> responses = productRepository.findByPriceRange(pageable, minPrice, maxPrice);
+      Long endAt = System.currentTimeMillis();
+
+      log.info("소요시간: " + (endAt - startAt));
+
+      return responses;
     }
 }
