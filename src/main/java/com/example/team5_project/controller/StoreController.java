@@ -8,9 +8,10 @@ import com.example.team5_project.dto.store.response.ReadStoreResponse;
 import com.example.team5_project.dto.store.response.UpdateStoreResponse;
 import com.example.team5_project.service.StoreService;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,9 +42,9 @@ public class StoreController {
 
     @AuthCheck({"OWNER", "USER"})
     @GetMapping
-    public ResponseEntity<List<ReadStoreResponse>> getStore() {
+    public ResponseEntity<Page<ReadStoreResponse>> getStore(Pageable pageable) {
 
-        return new ResponseEntity<>(storeService.getStore(), HttpStatus.OK);
+        return new ResponseEntity<>(storeService.getStore(pageable), HttpStatus.OK);
     }
 
     @AuthCheck({"OWNER"})
