@@ -6,6 +6,7 @@ import com.example.team5_project.dto.orders.response.OrderResponse;
 import com.example.team5_project.dto.orders.response.OrderPageableResponse;
 import com.example.team5_project.dto.orders.response.UpdateOrderResponse;
 import com.example.team5_project.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,7 @@ public class OrdersController {
     @PostMapping("/product/{productId}/order")
     public ResponseEntity<OrderResponse> createOrder(@RequestAttribute("id") Long memberId,
                                                      @PathVariable(name = "productId")Long productId,
-                                                     @RequestBody CreateOrderRequest requestDto
+                                                     @Valid @RequestBody CreateOrderRequest requestDto
     ){
         OrderResponse response = orderService.createOrder(memberId, productId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -33,7 +34,7 @@ public class OrdersController {
     @PatchMapping("/order/{orderId}")
     public ResponseEntity<UpdateOrderResponse> updateOrderStatus(@RequestAttribute("id")Long memberId,
                                                                  @PathVariable(name ="orderId")Long orderId,
-                                                                 @RequestBody UpdateOrderRequest requestDto
+                                                                 @Valid @RequestBody UpdateOrderRequest requestDto
     ){
         UpdateOrderResponse response = orderService.updateOrderStatus(memberId, orderId, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
