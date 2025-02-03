@@ -2,7 +2,7 @@ package com.example.team5_project.service;
 
 import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.heart.response.HeartResponse;
-import com.example.team5_project.dto.product.response.ProductResponse;
+import com.example.team5_project.dto.product.response.ReadProductResponse;
 import com.example.team5_project.entity.Heart;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.entity.Product;
@@ -83,9 +83,10 @@ public class HeartService {
         return hearts.map(heart -> new HeartResponse(
             heart.getId(),
             memberId,
-            new ProductResponse(
+            new ReadProductResponse(
                 heart.getProduct().getId(), heart.getProduct().getName(),
-                heart.getProduct().getPrice(), heart.getProduct().getTotalLikes()),
+                heart.getProduct().getPrice(), heart.getProduct().getStock(),
+                heart.getProduct().getTotalLikes()),
             heart.getCreatedAt()
         ));
     }
