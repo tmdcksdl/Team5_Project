@@ -15,6 +15,7 @@ public enum MemberErrorCode {
     EMAIL_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하거나 탈퇴한 이메일입니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다."),
     NOT_FOUND_OWNER(HttpStatus.NOT_FOUND, "존재하지 않는 사장님입니다."),
+    INVALID_USER_TYPE(HttpStatus.NOT_FOUND, "유효하지 않은 사용자 타입입니다"),
 
     // 공통
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "올바르지 않은 입력값입니다.");
