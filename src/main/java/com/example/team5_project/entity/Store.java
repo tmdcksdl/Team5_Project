@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "is_deleted = false")
-@SQLDelete(sql = "UPDATE store SET is_deleted = true WHERE store_id = ?")
+@SQLDelete(sql = "UPDATE store SET is_deleted = true WHERE id = ?")
 public class Store extends BaseEntity {
 
     @Comment("가게 식별자")
@@ -31,4 +31,17 @@ public class Store extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    public static Store create(String name, Member member) {
+        return new Store(name, member);
+    }
+
+    public void update(String name) {
+        this.name = name;
+    }
+
+    private Store(String name, Member member){
+        this.name = name;
+        this.member = member;
+    }
 }
