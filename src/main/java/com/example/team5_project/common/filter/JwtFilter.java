@@ -47,7 +47,7 @@ public class JwtFilter implements Filter {
         String userType = jwtUtil.extractUserType(jwt);
         Long id = Long.parseLong(jwtUtil.extractId(jwt));
 
-        request.setAttribute("userType", userType);
+        request.setAttribute("user_type", userType);
         request.setAttribute("id", id);
 
         filterChain.doFilter(request,response);
