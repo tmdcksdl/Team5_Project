@@ -1,5 +1,6 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.heart.response.HeartResponse;
 import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.entity.Heart;
@@ -26,11 +27,11 @@ public class HeartService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
 //    private final ProductRepository2 productRepository2;
-    // todo jwt 관련... ex) jwtUtil
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public HttpStatus toggleHeart(
-        Long memberId,
+        String token,
         Long productId
     ) {
         /**
@@ -38,7 +39,7 @@ public class HeartService {
          * - Heart 테이블에서 memberId, productId가 일치하는 엔티티가 있으면 좋아요 취소
          * - 없으면 좋아요 등록
          */
-
+        Long memberId = Long.valueOf(jwtUtil.extractId(token)); // memberId 정보 추출
         Heart heart = heartRepository.findHeart(memberId, productId);
 
         // 좋아요 등록
@@ -73,15 +74,15 @@ public class HeartService {
     }
 
     @Transactional
-    public Page<HeartResponse> getHeartList(Long memberId, int page, int size) {
+    public Page<HeartResponse> getHeartList(String token, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
+        Long memberId = Long.valueOf(jwtUtil.extractId(token)); // memberId 정보 추출
 
         Page<Heart> hearts = heartRepository.findHearts(memberId, pageable);
 
         return hearts.map(heart -> new HeartResponse(
             heart.getId(),
             memberId,
-            heart.getProduct().getId(),
             new ProductResponse(
                 heart.getProduct().getId(), heart.getProduct().getName(),
                 heart.getProduct().getPrice(), heart.getProduct().getTotalLikes()),
