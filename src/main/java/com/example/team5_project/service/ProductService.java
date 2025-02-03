@@ -4,7 +4,7 @@ import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
 import com.example.team5_project.dto.product.response.OwnerReadProductResponse;
-import com.example.team5_project.dto.product.response.ReadProductResponse;
+import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.dto.product.response.UserReadProductResponse;
 import com.example.team5_project.entity.Product;
@@ -47,7 +47,7 @@ public class ProductService {
 
     }
 
-    public List<? extends ReadProductResponse> getProducts(String token) {
+    public List<? extends ProductResponse> getProducts(String token) {
 
         String userType = jwtUtil.extractUserType(token);
 
@@ -71,7 +71,7 @@ public class ProductService {
         throw new IllegalArgumentException("유효하지 않은 사용자 유형입니다.");
     }
 
-    public ReadProductResponse getProduct(Long productId, String token) {
+    public ProductResponse getProduct(Long productId, String token) {
 
         String userType = jwtUtil.extractUserType(token);
 

@@ -4,7 +4,7 @@ import com.example.team5_project.common.aspect.AuthCheck;
 import com.example.team5_project.dto.product.request.CreateProductRequest;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
-import com.example.team5_project.dto.product.response.ReadProductResponse;
+import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ public class ProductController {
 
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products")
-    public ResponseEntity<List<? extends ReadProductResponse>> getProducts(HttpServletRequest request) {
+    public ResponseEntity<List<? extends ProductResponse>> getProducts(HttpServletRequest request) {
 
         String token = extractToken(request);
         return new ResponseEntity<>(productService.getProducts(token), HttpStatus.OK);
@@ -52,7 +52,7 @@ public class ProductController {
 
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products/{productId}")
-    public ResponseEntity<? extends ReadProductResponse> getProduct(
+    public ResponseEntity<? extends ProductResponse> getProduct(
             @PathVariable Long productId,
             HttpServletRequest request
     ) {
