@@ -48,7 +48,7 @@ public class StoreController {
             @RequestParam(name = "size",defaultValue = "5")int size,
             @RequestParam(name = "page", defaultValue = "1")int page) {
 
-        Pageable pageable = PageRequest.of(size, page);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         return new ResponseEntity<>(storeService.getStore(pageable), HttpStatus.OK);
     }

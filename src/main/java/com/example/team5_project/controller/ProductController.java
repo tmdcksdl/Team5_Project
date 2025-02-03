@@ -8,8 +8,10 @@ import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -44,10 +47,15 @@ public class ProductController {
 
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products")
-    public ResponseEntity<List<? extends ProductResponse>> getProducts(HttpServletRequest request) {
+    public ResponseEntity<Page<? extends ProductResponse>> getProducts(
+            @RequestParam(name = "size",defaultValue = "5")int size,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            HttpServletRequest request) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         String token = extractToken(request);
-        return new ResponseEntity<>(productService.getProducts(token), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProducts(pageable, token), HttpStatus.OK);
     }
 
     @AuthCheck({"OWNER", "USER"})

@@ -11,10 +11,10 @@ import com.example.team5_project.entity.Product;
 import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.StoreRepository;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,26 +47,24 @@ public class ProductService {
 
     }
 
-    public List<? extends ProductResponse> getProducts(String token) {
+    public Page<? extends ProductResponse> getProducts(Pageable pageable, String token) {
 
         String userType = jwtUtil.extractUserType(token);
 
-        List<Product> productList = productRepository.findAll();
+        Page<Product> productPage = productRepository.findproducts(pageable);
 
         if (userType.equalsIgnoreCase("USER")) {
-            return productList.stream()
+            return productPage
                     .map(product -> new UserReadProductResponse(
                             product.getId(), product.getName(),
-                            product.getPrice(), product.getTotalLikes()))
-                    .collect(Collectors.toList());
+                            product.getPrice(), product.getTotalLikes()));
         }
 
         if (userType.equalsIgnoreCase("OWNER")) {
-            return productList.stream()
+            return productPage
                     .map(product -> new OwnerReadProductResponse(
                             product.getId(), product.getName(),
-                            product.getPrice(), product.getStock(), product.getTotalLikes()))
-                    .collect(Collectors.toList());
+                            product.getPrice(), product.getStock(), product.getTotalLikes()));
         }
         throw new IllegalArgumentException("유효하지 않은 사용자 유형입니다.");
     }
