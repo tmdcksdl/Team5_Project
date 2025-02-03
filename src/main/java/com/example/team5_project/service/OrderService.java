@@ -50,7 +50,7 @@ public class OrderService {
             throw new OutOfStockException("해당 제품은 품절입니다");
         }
 
-        if (product.getStock() < requestDto.quantity()) {
+        if (10 < requestDto.quantity()) {
             throw new IndexOutOfBoundsException(
                     "해당 제품의 재고가 선택하신 수량보다 부족합니다. 재고:" + product.getStock()
             );
