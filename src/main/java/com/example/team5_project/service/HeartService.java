@@ -1,5 +1,9 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.exception.MemberException;
+import com.example.team5_project.common.exception.ProductException;
+import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
+import com.example.team5_project.common.exception.errorcode.ProductErrorCode;
 import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.heart.response.HeartResponse;
 import com.example.team5_project.dto.product.response.ReadProductResponse;
@@ -45,9 +49,9 @@ public class HeartService {
         if(heart == null ) {
 
             Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new IllegalArgumentException("")); //todo 예외처리 핸들러
+                () -> new MemberException(MemberErrorCode.NOT_FOUND_USER));
             Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("")); //todo 예외처리 핸들러
+                () -> new ProductException(ProductErrorCode.NOT_FOUND_PRODUCT));
 
             Heart savedHeart = new Heart(member, product);
             heartRepository.save(savedHeart);
@@ -78,8 +82,7 @@ public class HeartService {
         Page<Heart> hearts = heartRepository.findHearts(memberId, pageable);
 
         return hearts.map(heart -> new HeartResponse(
-            heart.getId(),
-            memberId,
+            heart.getId(), memberId,
             new ReadProductResponse(
                 heart.getProduct().getId(), heart.getProduct().getName(),
                 heart.getProduct().getPrice(), heart.getProduct().getStock(),

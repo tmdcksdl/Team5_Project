@@ -4,11 +4,14 @@ import com.example.team5_project.common.aspect.AuthCheck;
 import com.example.team5_project.dto.product.request.CreateProductRequest;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
-import com.example.team5_project.dto.product.response.ReadProductResponse;
+import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.service.ProductService;
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +21,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/stores")
+@RequestMapping("/api/stores")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -43,18 +47,41 @@ public class ProductController {
 
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products")
-    public ResponseEntity<List<ReadProductResponse>> getProducts() {
+    public ResponseEntity<Page<? extends ProductResponse>> getProducts(
+            @RequestParam(name = "size",defaultValue = "5")int size,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @PathVariable(name = "storesId") Long storeId,
+            HttpServletRequest request) {
 
-        return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        String token = extractToken(request);
+        return new ResponseEntity<>(productService.getProducts(pageable, token, storeId), HttpStatus.OK);
+    }
+
+    @AuthCheck({"OWNER", "USER"})
+    @GetMapping("/v1/products")
+    public ResponseEntity<Page<? extends ProductResponse>> searchByProductName(
+            @RequestParam(name = "size",defaultValue = "5")int size,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            HttpServletRequest request,
+            @RequestParam String keyword) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        String token = extractToken(request);
+        return new ResponseEntity<>(productService.searchByProductName(pageable, token, keyword), HttpStatus.OK);
     }
 
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products/{productId}")
-    public ResponseEntity<ReadProductResponse> getProduct(
-            @PathVariable Long productId
+    public ResponseEntity<? extends ProductResponse> getProduct(
+            @PathVariable Long productId,
+            HttpServletRequest request
     ) {
 
-        return new ResponseEntity<>(productService.getProduct(productId), HttpStatus.OK);
+        String token = extractToken(request);
+        return new ResponseEntity<>(productService.getProduct(productId, token), HttpStatus.OK);
     }
 
     @AuthCheck({"OWNER"})
@@ -77,6 +104,12 @@ public class ProductController {
         productService.deleteProduct(productId);
 
         return new ResponseEntity<>("상품이 삭제 되었습니다.", HttpStatus.NO_CONTENT);
+    }
+
+    public String extractToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        String token = header.substring(7);
+        return token;
     }
 
 }
