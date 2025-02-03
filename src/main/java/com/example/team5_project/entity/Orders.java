@@ -13,7 +13,6 @@ import org.hibernate.annotations.Where;
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Where(clause = "is_deleted = false")
 @SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")
 public class Orders extends BaseEntity {
@@ -33,16 +32,29 @@ public class Orders extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Comment("상품명")
-    @Column(name = "product_name")
-    private String productName;
+    @Comment("총 수량")
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @Comment("총 금액")
     @Column(name = "total_price")
-    private Long totalPrice;
+    private Integer totalPrice;
 
     @Comment("주문 상태")
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status")
     private OrderStatus orderStatus;
+
+
+    public Orders(Member member, Product product, OrderStatus orderStatus, Integer quantity){
+        this.member = member;
+        this.product = product;
+        this.orderStatus = orderStatus;
+        this.quantity = quantity;
+        this.totalPrice = product.getPrice() * quantity;
+    }
+
+    public void updateOrderStatus(OrderStatus orderStatus){
+        this.orderStatus = orderStatus;
+    }
 }
