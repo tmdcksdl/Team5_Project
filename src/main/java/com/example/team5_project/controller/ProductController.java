@@ -1,5 +1,6 @@
 package com.example.team5_project.controller;
 
+import com.example.team5_project.common.aspect.AuthCheck;
 import com.example.team5_project.dto.product.request.CreateProductRequest;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
@@ -26,6 +27,7 @@ public class ProductController {
 
     private final ProductService productService;
 
+    @AuthCheck({"OWNER"})
     @PostMapping("/{storesId}/products")
     public ResponseEntity<CreateProductResponse> createProduct(
             @RequestBody CreateProductRequest requestDto,
@@ -39,12 +41,14 @@ public class ProductController {
 
     }
 
+    @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products")
     public ResponseEntity<List<ReadProductResponse>> getProducts() {
 
         return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
     }
 
+    @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products/{productId}")
     public ResponseEntity<ReadProductResponse> getProduct(
             @PathVariable Long productId
@@ -53,6 +57,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProduct(productId), HttpStatus.OK);
     }
 
+    @AuthCheck({"OWNER"})
     @PatchMapping("/{storesId}/products/{productId}")
     public ResponseEntity<UpdateProductResponse> updateProduct(
             @PathVariable Long productId,
@@ -63,6 +68,7 @@ public class ProductController {
 
     }
 
+    @AuthCheck({"OWNER"})
     @DeleteMapping("/{storesId}/products/{productId}")
     public ResponseEntity<String> deleteProduct(
             @PathVariable Long productId

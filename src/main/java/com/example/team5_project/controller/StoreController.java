@@ -1,5 +1,6 @@
 package com.example.team5_project.controller;
 
+import com.example.team5_project.common.aspect.AuthCheck;
 import com.example.team5_project.dto.store.request.CreateStoreRequest;
 import com.example.team5_project.dto.store.request.UpdateStoreRequest;
 import com.example.team5_project.dto.store.response.CreateStoreResponse;
@@ -28,6 +29,7 @@ public class StoreController {
 
     private final StoreService storeService;
 
+    @AuthCheck({"OWNER"})
     @PostMapping
     public ResponseEntity<CreateStoreResponse> createStore(
             @RequestBody CreateStoreRequest requestDto
@@ -35,12 +37,14 @@ public class StoreController {
         return new ResponseEntity<>(storeService.createStore(requestDto), HttpStatus.CREATED);
     }
 
+    @AuthCheck({"OWNER", "USER"})
     @GetMapping
     public ResponseEntity<List<ReadStoreResponse>> getStore() {
 
         return new ResponseEntity<>(storeService.getStore(), HttpStatus.OK);
     }
 
+    @AuthCheck({"OWNER"})
     @PatchMapping("/{storeId}")
     public ResponseEntity<UpdateStoreResponse> updateStore(
             @RequestBody UpdateStoreRequest requestDto,
@@ -50,6 +54,7 @@ public class StoreController {
         return new ResponseEntity<>(storeService.updateStore(storeId, requestDto),HttpStatus.OK);
     }
 
+    @AuthCheck({"OWNER"})
     @DeleteMapping("/{storeId}")
     public ResponseEntity<String> deleteStore(
             @PathVariable Long storeId
