@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum OrderStatus {
 
-    주문접수, 배송준비, 배송중, 배송완료;
+    주문접수, 주문취소,  배송준비, 배송중, 배송완료;
 
     public static OrderStatus of(String status) {
         return Arrays.stream(OrderStatus.values())  //이넘의 값을 뽑는다
