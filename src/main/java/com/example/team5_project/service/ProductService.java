@@ -20,6 +20,7 @@ import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.SearchRepository;
 import com.example.team5_project.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -90,11 +91,12 @@ public class ProductService {
     }
 
     /**
-     * 상품 단건 조회 - 검색어로 조회 가능
+     * 상품 단건 조회 - store_id 로 조회
      * @param productId
      * @param token
      * @return
      */
+    @Cacheable("getProduct")
     @Transactional
     public ProductResponse getProduct(Long productId, String token) {
 
@@ -130,6 +132,33 @@ public class ProductService {
      */
     @Transactional
     public Page<? extends ProductResponse> searchByProductName(Pageable pageable, String token, String keyword) {
+
+        String userType = jwtUtil.extractUserType(token);
+
+        Search createdSearch = Search.of(keyword);
+        searchRepository.save(createdSearch);
+
+        Page<Product> productPage = productRepository.searchByName(keyword, pageable);
+
+        if (userType.equalsIgnoreCase("USER")) {
+            return productPage
+                    .map(product -> new UserReadProductResponse(
+                            product.getId(), product.getName(),
+                            product.getPrice(), product.getTotalLikes(), product.getTotalViewCounts()));
+        }
+
+        if (userType.equalsIgnoreCase("OWNER")) {
+            return productPage
+                    .map(product -> new OwnerReadProductResponse(
+                            product.getId(), product.getName(),
+                            product.getPrice(), product.getStock(),
+                            product.getTotalLikes(), product.getTotalViewCounts()));
+        }
+        throw new MemberException(MemberErrorCode.INVALID_USER_TYPE);
+    }
+
+    @Transactional
+    public Page<? extends ProductResponse> searchByProductNameCached(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
 
