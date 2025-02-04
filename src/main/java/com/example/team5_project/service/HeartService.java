@@ -49,7 +49,7 @@ public class HeartService {
         if(heart == null ) {
 
             Member member = memberRepository.findById(memberId).orElseThrow(
-                () -> new MemberException(MemberErrorCode.NOT_FOUND_USER));
+                () -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
             Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductException(ProductErrorCode.NOT_FOUND_PRODUCT));
 
