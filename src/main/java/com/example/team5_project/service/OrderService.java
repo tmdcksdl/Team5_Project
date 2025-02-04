@@ -1,11 +1,14 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.exception.*;
+import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
+import com.example.team5_project.common.exception.errorcode.OrderErrorCode;
+import com.example.team5_project.common.exception.errorcode.ProductErrorCode;
+import com.example.team5_project.common.exception.errorcode.StoreErrorCode;
 import org.springframework.stereotype.Service;
 
 
 import com.example.team5_project.common.enums.OrderStatus;
-import com.example.team5_project.common.exception.OrderCancellationException;
-import com.example.team5_project.common.exception.OutOfStockException;
 import com.example.team5_project.dto.orders.request.CreateOrderRequest;
 import com.example.team5_project.dto.orders.request.UpdateOrderRequest;
 import com.example.team5_project.dto.orders.response.OrderResponse;
@@ -47,13 +50,11 @@ public class OrderService {
         Product product = productFindByIdOrThrow(productId);
 
         if (product.getStock() == 0) {
-            throw new OutOfStockException("해당 제품은 품절입니다");
+            throw new OrderException(OrderErrorCode.OUT_OF_STOCK);
         }
 
         if (product.getStock() < requestDto.quantity()) {
-            throw new IndexOutOfBoundsException(
-                    "해당 제품의 재고가 선택하신 수량보다 부족합니다. 재고:" + product.getStock()
-            );
+            throw new OrderException(OrderErrorCode.INSUFFICIENT_STOCK);
         }
 
         Orders order = new Orders(member, product, OrderStatus.주문접수, requestDto.quantity());
@@ -70,7 +71,7 @@ public class OrderService {
         Long ownerId = order.getProduct().getStore().getMember().getId();
 
         if(!Objects.equals(ownerId, memberId)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인 가게에대한 주문건만 상태변경할 수 있습니다");
+            throw new OrderException(OrderErrorCode.UNAUTHORIZED);
         }
 
         OrderStatus status = OrderStatus.of(requestDto.orderStatus());
@@ -87,11 +88,11 @@ public class OrderService {
         Long ordersMemberId = order.getMember().getId();
 
         if(!Objects.equals(memberId, ordersMemberId)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 주문만 상태변경할 수 있습니다");
+            throw new OrderException(OrderErrorCode.UNAUTHORIZED);
         }
 
         if(!"주문접수".equals(order.getOrderStatus().name())){
-            throw new OrderCancellationException("주문취소가 불가능합니다");
+            throw new OrderException(OrderErrorCode.CANNOT_CANCEL);
         }
 
         order.updateOrderStatus(OrderStatus.주문취소);
@@ -110,7 +111,7 @@ public class OrderService {
 
 
         if(!Objects.equals(memberId, ordersMember)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인의 주문만 확인할 수 있습니다");
+            throw new OrderException(OrderErrorCode.UNAUTHORIZED);
         }
 
         return new OrderResponse(order);
@@ -121,7 +122,7 @@ public class OrderService {
         Long ownerId = store.getMember().getId();
 
         if(!Objects.equals(memberId, ownerId)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인 가게의 주문내역만 확인할 수 있습니다");
+            throw new OrderException(OrderErrorCode.UNAUTHORIZED);
         }
 
         Page<OrderPageableResponse> responses =  ordersRepository.findOrdersByStoreId(storeId, pageable);
@@ -134,7 +135,7 @@ public class OrderService {
         Long ownerId = store.getMember().getId();
 
         if(!Objects.equals(memberId, ownerId)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "본인 가게의 주문만 확인할 수 있습니다");
+            throw new OrderException(OrderErrorCode.UNAUTHORIZED);
         }
 
         Orders order = orderFindByIdOrThrow(orderId);
@@ -145,21 +146,21 @@ public class OrderService {
 
     public Member memberFindByIdOrThrow(Long memberId){
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NullPointerException("해당 멤버는 존재하지 않습니다"));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_USER));
     }
 
     public Store storeFindByIdOrThrow(Long storeId){
         return storeRepository.findById(storeId)
-                .orElseThrow(() -> new NullPointerException("해당 가게는 존재하지 않습니다"));
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND_STORE));
     }
 
     public Orders orderFindByIdOrThrow(Long orderId){
         return ordersRepository.findById(orderId)
-                .orElseThrow(()->new NullPointerException("해당 주문건은 존재하지 않습니다"));
+                .orElseThrow(() -> new OrderException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     public Product productFindByIdOrThrow(Long productId){
         return productRepository.findById(productId)
-                .orElseThrow(() -> new NullPointerException("해당 상품은 존재하지 않습니다"));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.NOT_FOUND_PRODUCT));
     }
 }
