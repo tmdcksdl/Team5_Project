@@ -2,9 +2,9 @@ package com.example.team5_project.service;
 
 import com.example.team5_project.dto.search.response.FindSearchResponse;
 import com.example.team5_project.repository.SearchRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,13 +15,16 @@ public class SearchService {
 
     /**
      * product를 조회한 검색어를 조회함
-     * @param pageable
      * @return
      */
-    public Page<FindSearchResponse> getSearches(Pageable pageable) {
+    public List<FindSearchResponse> getSearches() {
 
-        Page<Object[]> searchByName = searchRepository.findSearchByName(pageable);
+        List<Object[]> searchList = searchRepository.findSearchByName();
 
-        return searchByName.map(search -> new FindSearchResponse((String) search[0], (Long) search[1]));
+        return searchList
+                .stream()
+                .map(search -> new FindSearchResponse((String) search[0], (Long) search[1]))
+                .limit(10)
+                .collect(Collectors.toList());
     }
 }
