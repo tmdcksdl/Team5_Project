@@ -20,6 +20,7 @@ import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.SearchRepository;
 import com.example.team5_project.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,7 @@ public class ProductService {
      * @param token
      * @return
      */
+    @Cacheable("getProduct")
     @Transactional
     public ProductResponse getProduct(Long productId, String token) {
 
