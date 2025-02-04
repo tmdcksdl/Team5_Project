@@ -17,10 +17,17 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping("/searches")
-    public ResponseEntity<List<FindSearchResponse>> findAllSearches(
+    @GetMapping("/v1/searches")
+    public ResponseEntity<List<FindSearchResponse>> findAllSearchesV1(
     ) {
 
-        return new ResponseEntity<>(searchService.getSearches(), HttpStatus.OK);
+        return new ResponseEntity<>(searchService.getSearchesV1(), HttpStatus.OK);
+    }
+
+    @GetMapping("/v2/searches")
+    public ResponseEntity<List<FindSearchResponse>> findAllSearchesV2(
+    ) {
+
+        return new ResponseEntity<>(searchService.getSearchesV2(), HttpStatus.OK);
     }
 }
