@@ -89,6 +89,20 @@ public class ProductController {
         return new ResponseEntity<>(productService.searchByProductName(pageable, token, keyword), HttpStatus.OK);
     }
 
+    @AuthCheck({"OWNER", "USER"})
+    @GetMapping("/v2/products")
+    public ResponseEntity<Page<? extends ProductResponse>> searchByProductNameCached(
+            @RequestParam(name = "size",defaultValue = "5")int size,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            HttpServletRequest request,
+            @RequestParam String keyword) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        String token = extractToken(request);
+        return new ResponseEntity<>(productService.searchByProductNameCached(pageable, token, keyword), HttpStatus.OK);
+    }
+
     /**
      * product_id 로 조회 -> 조회수 증가
      * @param productId
