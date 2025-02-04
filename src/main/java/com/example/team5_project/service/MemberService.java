@@ -1,5 +1,7 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.exception.MemberException;
+import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
 import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.common.utils.PasswordEncoder;
 import com.example.team5_project.dto.member.request.SignInMemberRequest;
@@ -13,10 +15,8 @@ import com.example.team5_project.entity.Member;
 import com.example.team5_project.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +28,11 @@ public class MemberService {
 
     // 회원가입 서비스
     public SignUpMemberResponse signUpMember(SignUpMemberRequest requestDto) {
+
+        // 등록된 이메일 여부 확인
+        if (memberRepository.findMemberByEmail(requestDto.getEmail()).isPresent()) {
+            throw new MemberException(MemberErrorCode.EMAIL_EXIST);
+        }
 
         String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
         Member member = Member.of(requestDto, encodedPassword);
@@ -46,10 +51,10 @@ public class MemberService {
     public SignInMemberResponse signInMember(SignInMemberRequest requestDto) {
 
         Member foundMember = memberRepository.findMemberByEmail(requestDto.getEmail()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 email을 가지고 있는 회원이 없습니다."));
+                new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), foundMember.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberErrorCode.UNAUTHORIZED);
         }
 
         String token = jwtUtil.generateToken(
@@ -67,10 +72,10 @@ public class MemberService {
         Long id = (Long) requestDto.getAttribute("id");
 
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id의 회원을 찾을 수 없습니다."));
+                new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
         if (foundMember.getId() != id) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 id의 회원 정보를 조회할 수 없습니다.");
+            throw new MemberException(MemberErrorCode.ACCESS_DENIED);
         }
 
         return new FindMemberResponse(
@@ -88,10 +93,10 @@ public class MemberService {
         Long id = (Long) servletRequest.getAttribute("id");
 
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id의 회원을 찾을 수 없습니다."));
+                new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
         if (foundMember.getId() != id) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 id의 회원 정보를 수정할 수 없습니다.");
+            throw new MemberException(MemberErrorCode.ACCESS_DENIED);
         }
 
         foundMember.updateMember(requestDto.getName(), requestDto.getAddress());
@@ -111,10 +116,10 @@ public class MemberService {
         Long id = (Long) servletRequest.getAttribute("id");
 
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id의 회원을 찾을 수 없습니다."));
+                new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
         if (foundMember.getId() != id) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 id의 회원을 삭제할 수 없습니다.");
+            throw new MemberException(MemberErrorCode.ACCESS_DENIED);
         }
 
         memberRepository.delete(foundMember);
