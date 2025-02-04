@@ -1,6 +1,8 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.exception.MemberException;
 import com.example.team5_project.common.exception.StoreException;
+import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
 import com.example.team5_project.common.exception.errorcode.StoreErrorCode;
 import com.example.team5_project.dto.store.request.CreateStoreRequest;
 import com.example.team5_project.dto.store.request.UpdateStoreRequest;
@@ -35,7 +37,7 @@ public class StoreService {
 
         //TODO :: MEMBER 완성되면 받아 쓰기
         Member foundMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
 
         if (storeRepository.existsByName(requestDto.name())) {
