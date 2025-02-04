@@ -1,18 +1,18 @@
 package com.example.team5_project.service;
 
-import com.example.team5_project.common.exception.*;
+import com.example.team5_project.common.enums.OrderStatus;
+import com.example.team5_project.common.exception.MemberException;
+import com.example.team5_project.common.exception.OrderException;
+import com.example.team5_project.common.exception.ProductException;
+import com.example.team5_project.common.exception.StoreException;
 import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
 import com.example.team5_project.common.exception.errorcode.OrderErrorCode;
 import com.example.team5_project.common.exception.errorcode.ProductErrorCode;
 import com.example.team5_project.common.exception.errorcode.StoreErrorCode;
-import org.springframework.stereotype.Service;
-
-
-import com.example.team5_project.common.enums.OrderStatus;
 import com.example.team5_project.dto.orders.request.CreateOrderRequest;
 import com.example.team5_project.dto.orders.request.UpdateOrderRequest;
-import com.example.team5_project.dto.orders.response.OrderResponse;
 import com.example.team5_project.dto.orders.response.OrderPageableResponse;
+import com.example.team5_project.dto.orders.response.OrderResponse;
 import com.example.team5_project.dto.orders.response.UpdateOrderResponse;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.entity.Orders;
@@ -22,16 +22,13 @@ import com.example.team5_project.repository.MemberRepository;
 import com.example.team5_project.repository.OrdersRepository;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.StoreRepository;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -146,7 +143,7 @@ public class OrderService {
 
     public Member memberFindByIdOrThrow(Long memberId){
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
     }
 
     public Store storeFindByIdOrThrow(Long storeId){
