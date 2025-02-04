@@ -14,8 +14,10 @@ import com.example.team5_project.dto.product.response.ProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.dto.product.response.UserReadProductResponse;
 import com.example.team5_project.entity.Product;
+import com.example.team5_project.entity.Search;
 import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.ProductRepository;
+import com.example.team5_project.repository.SearchRepository;
 import com.example.team5_project.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
+    private final SearchRepository searchRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -52,6 +55,13 @@ public class ProductService {
 
     }
 
+    /**
+     * store_id 에 해당하는 상품 조회
+     * @param pageable
+     * @param token
+     * @param storeId
+     * @return
+     */
     public Page<? extends ProductResponse> getProducts(Pageable pageable, String token, Long storeId) {
 
         String userType = jwtUtil.extractUserType(token);
@@ -79,6 +89,12 @@ public class ProductService {
         throw new MemberException(MemberErrorCode.INVALID_USER_TYPE);
     }
 
+    /**
+     * 상품 단건 조회 - 검색어로 조회 가능
+     * @param productId
+     * @param token
+     * @return
+     */
     @Transactional
     public ProductResponse getProduct(Long productId, String token) {
 
@@ -105,9 +121,20 @@ public class ProductService {
         throw new MemberException(MemberErrorCode.INVALID_USER_TYPE);
     }
 
+    /**
+     * 검색어로 조회시 해당하는 상품 전체 조회 -> search 객체 생성
+     * @param pageable
+     * @param token
+     * @param keyword
+     * @return
+     */
+    @Transactional
     public Page<? extends ProductResponse> searchByProductName(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
+
+        Search createdSearch = Search.of(keyword);
+        searchRepository.save(createdSearch);
 
         Page<Product> productPage = productRepository.searchByName(keyword, pageable);
 

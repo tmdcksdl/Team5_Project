@@ -45,6 +45,14 @@ public class ProductController {
 
     }
 
+    /**
+     * store_id 에 해당하는 상품 조회
+     * @param size
+     * @param page
+     * @param storeId
+     * @param request
+     * @return
+     */
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products")
     public ResponseEntity<Page<? extends ProductResponse>> getProducts(
@@ -59,6 +67,14 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProducts(pageable, token, storeId), HttpStatus.OK);
     }
 
+    /**
+     * 검색어로 조회시 해당하는 상품 전체 조회 -> search 객체 생성
+     * @param size
+     * @param page
+     * @param request
+     * @param keyword
+     * @return
+     */
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/v1/products")
     public ResponseEntity<Page<? extends ProductResponse>> searchByProductName(
@@ -73,6 +89,12 @@ public class ProductController {
         return new ResponseEntity<>(productService.searchByProductName(pageable, token, keyword), HttpStatus.OK);
     }
 
+    /**
+     * product_id 로 조회 -> 조회수 증가
+     * @param productId
+     * @param request
+     * @return
+     */
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{storesId}/products/{productId}")
     public ResponseEntity<? extends ProductResponse> getProduct(
