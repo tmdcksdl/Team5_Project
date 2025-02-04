@@ -91,7 +91,7 @@ public class ProductService {
     }
 
     /**
-     * 상품 단건 조회 - 검색어로 조회 가능
+     * 상품 단건 조회 - store_id 로 조회
      * @param productId
      * @param token
      * @return
@@ -130,6 +130,7 @@ public class ProductService {
      * @param keyword
      * @return
      */
+    @Cacheable("searchByProductName")
     @Transactional
     public Page<? extends ProductResponse> searchByProductName(Pageable pageable, String token, String keyword) {
 
