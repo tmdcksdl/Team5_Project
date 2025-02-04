@@ -8,11 +8,7 @@ import com.example.team5_project.common.exception.errorcode.ProductErrorCode;
 import com.example.team5_project.common.exception.errorcode.StoreErrorCode;
 import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
-import com.example.team5_project.dto.product.response.CreateProductResponse;
-import com.example.team5_project.dto.product.response.OwnerReadProductResponse;
-import com.example.team5_project.dto.product.response.ProductResponse;
-import com.example.team5_project.dto.product.response.UpdateProductResponse;
-import com.example.team5_project.dto.product.response.UserReadProductResponse;
+import com.example.team5_project.dto.product.response.*;
 import com.example.team5_project.entity.Product;
 import com.example.team5_project.entity.Search;
 import com.example.team5_project.entity.Store;
@@ -34,6 +30,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
+    private final CacheService cacheService;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -96,7 +93,6 @@ public class ProductService {
      * @param token
      * @return
      */
-    @Cacheable("getProduct")
     @Transactional
     public ProductResponse getProduct(Long productId, String token) {
 
@@ -130,13 +126,16 @@ public class ProductService {
      * @param keyword
      * @return
      */
+    //
     @Transactional
     public Page<? extends ProductResponse> searchByProductName(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
 
-        Search createdSearch = Search.of(keyword);
-        searchRepository.save(createdSearch);
+        if (!(keyword == null || keyword.trim().isEmpty())) {
+            Search createdSearch = Search.of(keyword);
+            searchRepository.save(createdSearch);
+        }
 
         Page<Product> productPage = productRepository.searchByName(keyword, pageable);
 
@@ -157,13 +156,22 @@ public class ProductService {
         throw new MemberException(MemberErrorCode.INVALID_USER_TYPE);
     }
 
+    @Cacheable(value = "searchProducts", key = "#keyword")  // Local memory Cache 적용
     @Transactional
     public Page<? extends ProductResponse> searchByProductNameCached(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
 
-        Search createdSearch = Search.of(keyword);
-        searchRepository.save(createdSearch);
+        // 검색어를 캐시에 저장 (+ 횟수 증가)
+        if (!(keyword == null || keyword.trim().isEmpty())) {
+            cacheService.saveKeywordToCache(keyword);
+        }
+
+        // 검색어를 DB에도 저장 (중복 방지)
+        if (!searchRepository.existsByName(keyword)) {
+            Search createdSearch = Search.of(keyword);
+            searchRepository.save(createdSearch);
+        }
 
         Page<Product> productPage = productRepository.searchByName(keyword, pageable);
 

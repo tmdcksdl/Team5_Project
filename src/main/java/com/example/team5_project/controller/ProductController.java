@@ -81,7 +81,8 @@ public class ProductController {
             @RequestParam(name = "size",defaultValue = "5")int size,
             @RequestParam(name = "page", defaultValue = "1") int page,
             HttpServletRequest request,
-            @RequestParam String keyword) {
+            @RequestParam String keyword
+    ) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 

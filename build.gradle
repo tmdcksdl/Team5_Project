@@ -46,8 +46,9 @@ dependencies {
 
     // 캐시
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-    // 캐시 구현체
-    implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
