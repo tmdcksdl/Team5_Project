@@ -25,15 +25,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("UPDATE Product p SET p.totalLikes = p.totalLikes - 1 WHERE p.id = :productId")
     void decreaseTotalLikes(Long productId);
 
-
-    @Query("SELECT new com.example.team5_project.dto.product.response.PageableProductResponse(" +
-            "s.name, p.name, p.price) " +
-            "FROM Product p JOIN p.store s " +
-            "WHERE (:minPrice IS NULL OR p.price >= :minPrice) " +
-            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
-            "ORDER BY p.totalLikes DESC, p.name ASC ")
-
-    Page<PageableProductResponse> findByPriceRange(Pageable pageable,
-                                                   @Param("minPrice") Integer minPrice,
-                                                   @Param("maxPrice") Integer maxPrice);
 }

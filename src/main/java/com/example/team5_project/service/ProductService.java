@@ -7,6 +7,7 @@ import com.example.team5_project.dto.product.response.ReadProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.entity.Product;
 import com.example.team5_project.entity.Store;
+import com.example.team5_project.repository.ProductQueryRepository;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.StoreRepository;
 import java.util.List;
@@ -27,6 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
+    private final ProductQueryRepository productQueryRepository;
 
     @Transactional
     public CreateProductResponse createProduct(Long storeId, String name, int price, int stock) {
@@ -102,11 +104,11 @@ public class ProductService {
     }
 
     public Page<PageableProductResponse> findByPriceRange(Pageable pageable, Integer minPrice, Integer maxPrice){
-       Long startAt = System.currentTimeMillis();
-      Page<PageableProductResponse> responses = productRepository.findByPriceRange(pageable, minPrice, maxPrice);
-      Long endAt = System.currentTimeMillis();
+        Long startAt = System.currentTimeMillis();
+      Page<PageableProductResponse> responses = productQueryRepository.findByPriceRange(minPrice,maxPrice,pageable);
+        Long endAt = System.currentTimeMillis();
 
-      log.info("소요시간: " + (endAt - startAt));
+        log.info("최적화 후 : " + (endAt - startAt) + "ms");
 
       return responses;
     }
