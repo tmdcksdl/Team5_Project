@@ -33,42 +33,57 @@ public class StoreController {
 
     private final StoreService storeService;
 
+    /**
+     * 가게 생성
+     */
     @AuthCheck({"OWNER"})
     @PostMapping
     public ResponseEntity<CreateStoreResponse> createStore(
-            @RequestBody CreateStoreRequest requestDto,
-            HttpServletRequest httpServletRequest
+        @RequestBody CreateStoreRequest requestDto,
+        HttpServletRequest httpServletRequest
     ) {
-        return new ResponseEntity<>(storeService.createStore(requestDto, httpServletRequest), HttpStatus.CREATED);
+        CreateStoreResponse storeResponse = storeService.createStore(requestDto, httpServletRequest);
+
+        return new ResponseEntity<>(storeResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * 가게 전체 조회
+     */
     @AuthCheck({"OWNER", "USER"})
     @GetMapping
     public ResponseEntity<Page<ReadStoreResponse>> getStore(
-            @RequestParam(name = "size",defaultValue = "5")int size,
-            @RequestParam(name = "page", defaultValue = "1")int page) {
-
+        @RequestParam(name = "size",defaultValue = "5")int size,
+        @RequestParam(name = "page", defaultValue = "1")int page
+    ) {
         Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ReadStoreResponse> storeResponsePage = storeService.getStore(pageable);
 
-        return new ResponseEntity<>(storeService.getStore(pageable), HttpStatus.OK);
+        return new ResponseEntity<>(storeResponsePage, HttpStatus.OK);
     }
 
+    /**
+     * 가게 정보 수정
+     */
     @AuthCheck({"OWNER"})
     @PatchMapping("/{storeId}")
     public ResponseEntity<UpdateStoreResponse> updateStore(
-            @RequestBody UpdateStoreRequest requestDto,
-            @PathVariable Long storeId
+        @RequestBody UpdateStoreRequest requestDto,
+        @PathVariable Long storeId
     ) {
+        UpdateStoreResponse storeResponse = storeService.updateStore(storeId, requestDto);
 
-        return new ResponseEntity<>(storeService.updateStore(storeId, requestDto),HttpStatus.OK);
+        return new ResponseEntity<>(storeResponse, HttpStatus.OK);
     }
 
+    /**
+     * 가게 삭제
+     */
     @AuthCheck({"OWNER"})
     @DeleteMapping("/{storeId}")
     public ResponseEntity<String> deleteStore(
-            @PathVariable Long storeId
+        @PathVariable Long storeId
     ){
-
         storeService.deleteStore(storeId);
 
         return new ResponseEntity<>("가게가 삭제되었습니다.", HttpStatus.NO_CONTENT);
