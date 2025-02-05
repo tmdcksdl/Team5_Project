@@ -1,5 +1,7 @@
 package com.example.team5_project.common.filter;
 
+import com.example.team5_project.common.exception.MemberException;
+import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
 import com.example.team5_project.common.utils.JwtUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,13 +35,13 @@ public class JwtFilter implements Filter {
         String authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("JWT 토큰이 필요합니다.");
+            throw new MemberException(MemberErrorCode.MISSING_JWT_TOKEN);
         }
 
         String jwt = authorizationHeader.substring(7);
 
         if (!jwtUtil.validateToken(jwt)) {
-            throw new IllegalArgumentException("Token 값이 유효하지 않습니다.");
+            throw new MemberException(MemberErrorCode.INVALID_JWT_TOKEN);
         }
 
         log.info("필터 부분을 통과했습니다.");
