@@ -1,5 +1,9 @@
 package com.example.team5_project.service;
 
+import com.example.team5_project.common.exception.MemberException;
+import com.example.team5_project.common.exception.StoreException;
+import com.example.team5_project.common.exception.errorcode.MemberErrorCode;
+import com.example.team5_project.common.exception.errorcode.StoreErrorCode;
 import com.example.team5_project.dto.store.request.CreateStoreRequest;
 import com.example.team5_project.dto.store.request.UpdateStoreRequest;
 import com.example.team5_project.dto.store.response.CreateStoreResponse;
@@ -10,11 +14,10 @@ import com.example.team5_project.entity.Store;
 import com.example.team5_project.repository.MemberRepository;
 import com.example.team5_project.repository.StoreRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,12 +35,13 @@ public class StoreService {
 
         Long memberId = (Long) request.getAttribute("id");
 
+        //TODO :: MEMBER 완성되면 받아 쓰기
         Member foundMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-        //TODO 예외처리 어떻게 할지 확인하기
+
         if (storeRepository.existsByName(requestDto.name())) {
-            throw new RuntimeException();
+            throw new StoreException(StoreErrorCode.ALREADY_EXIST_STORE);
         }
 
         Store createdStore = Store.create(requestDto.name(), foundMember);
@@ -47,29 +51,24 @@ public class StoreService {
         return new CreateStoreResponse(savedStore.getId(), savedStore.getName());
     }
 
-    public List<ReadStoreResponse> getStore() {
+    public Page<ReadStoreResponse> getStore(Pageable pageable) {
 
-        List<Store> storeList = storeRepository.findAll();
+        Page<Store> storePage = storeRepository.findStores(pageable);
 
-        List<ReadStoreResponse> responseList = storeList.stream()
-                .map(store -> new ReadStoreResponse(
-                        store.getId(), store.getName()))
-                .collect(Collectors.toList());
-
-        return responseList;
+        return storePage.map(store -> new ReadStoreResponse(
+                store.getId(), store.getName()
+        ));
     }
 
     @Transactional
     public UpdateStoreResponse updateStore(Long storeId, UpdateStoreRequest requestDto) {
 
-        Optional<Store> byName = Optional.ofNullable(storeRepository.findByName(requestDto.name()));
-
-        if (byName.isPresent()) {
-            throw new RuntimeException();
+        if (storeRepository.existsByName(requestDto.name())) {
+            throw new StoreException(StoreErrorCode.ALREADY_EXIST_STORE);
         }
 
         Store foundStore = storeRepository.findById(storeId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND_STORE));
 
         foundStore.update(requestDto.name());
 
@@ -80,7 +79,7 @@ public class StoreService {
     public void deleteStore(Long storeId) {
 
         Store foundStore = storeRepository.findById(storeId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND_STORE));
 
         storeRepository.delete(foundStore);
 
