@@ -2,6 +2,7 @@ package com.example.team5_project.controller;
 
 import com.example.team5_project.dto.search.response.FindSearchResponse;
 import com.example.team5_project.service.CacheService;
+import com.example.team5_project.service.RedisService;
 import com.example.team5_project.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -17,6 +19,7 @@ public class SearchController {
 
     private final SearchService searchService;
     private final CacheService cacheService;
+    private final RedisService redisService;
 
     @GetMapping("/v1/searches")
     public ResponseEntity<List<FindSearchResponse>> findAllSearchesV1(
@@ -27,11 +30,12 @@ public class SearchController {
 
     // 인기 검색어 조회 API (상위 10개 검색어 조회)
     @GetMapping("/popular")
-    public ResponseEntity<List<String>> getPopularKeywords(
+    public ResponseEntity<Set<String>> getPopularKeywords(
             @RequestParam(defaultValue = "10") int limit
     ) {
 
-        List<String> popularKeywords = cacheService.getPopularKeywords(limit);
+//        List<String> popularKeywords = cacheService.getPopularKeywords(limit);
+        Set<String> popularKeywords = redisService.getPopularKeywords(limit);
 
         return new ResponseEntity<>(popularKeywords, HttpStatus.OK);
     }
@@ -42,7 +46,8 @@ public class SearchController {
             @RequestParam String keyword
     ) {
 
-        cacheService.removeKeyword(keyword);
+//        cacheService.removeKeyword(keyword);
+        redisService.deleteKeyword(keyword);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -51,7 +56,8 @@ public class SearchController {
     @DeleteMapping("cache/all")
     public ResponseEntity<Void> clearAllCache() {
 
-        cacheService.clearCache();
+//        cacheService.clearCache();
+        redisService.clearPopularKeywords();
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

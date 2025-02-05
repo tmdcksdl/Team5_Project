@@ -31,6 +31,7 @@ public class ProductService {
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
     private final CacheService cacheService;
+    private final RedisService redisService;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -132,7 +133,12 @@ public class ProductService {
 
         String userType = jwtUtil.extractUserType(token);
 
-        if (!(keyword == null || keyword.trim().isEmpty())) {
+        Search search = searchRepository.findByName(keyword).orElse(null);
+
+        // 검색어를 DB에도 저장 (중복 방지)
+        if (search != null) {
+            search.incrementCount();
+        } else {
             Search createdSearch = Search.of(keyword);
             searchRepository.save(createdSearch);
         }
@@ -156,19 +162,24 @@ public class ProductService {
         throw new MemberException(MemberErrorCode.INVALID_USER_TYPE);
     }
 
-    @Cacheable(value = "searchProducts", key = "#keyword")  // Local memory Cache 적용
     @Transactional
+    @Cacheable(value = "searchProducts", key = "#keyword")  // Local memory Cache 적용 -> Redis Cache 적용
     public Page<? extends ProductResponse> searchByProductNameCached(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
 
         // 검색어를 캐시에 저장 (+ 횟수 증가)
         if (!(keyword == null || keyword.trim().isEmpty())) {
-            cacheService.saveKeywordToCache(keyword);
+//            cacheService.saveKeywordToCache(keyword);
+            redisService.saveKeywordToCache(keyword);
         }
 
+        Search search = searchRepository.findByName(keyword).orElse(null);
+
         // 검색어를 DB에도 저장 (중복 방지)
-        if (!searchRepository.existsByName(keyword)) {
+        if (search != null) {
+            search.incrementCount();
+        } else {
             Search createdSearch = Search.of(keyword);
             searchRepository.save(createdSearch);
         }

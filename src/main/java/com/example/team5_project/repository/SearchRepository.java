@@ -5,11 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SearchRepository extends JpaRepository<Search, Long> {
 
-    @Query("SELECT s.name, COUNT(s) FROM Search s GROUP BY s.name ORDER BY COUNT(s) DESC")
+    @Query("SELECT s FROM Search s ORDER BY s.count DESC")
     List<Object[]> findSearchByName();
 
-    boolean existsByName(String name);
+    Optional<Search> findByName(String keyword);
 }
