@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface SearchRepository extends JpaRepository<Search, Long> {
 
     @Query("SELECT s FROM Search s ORDER BY s.count DESC")
-    List<Object[]> findSearchByName();
+    List<Search> findSearchByName();
 
     Optional<Search> findByName(String keyword);
 }

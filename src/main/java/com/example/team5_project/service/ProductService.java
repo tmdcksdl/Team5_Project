@@ -16,7 +16,6 @@ import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.SearchRepository;
 import com.example.team5_project.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -163,7 +162,7 @@ public class ProductService {
     }
 
     @Transactional
-    @Cacheable(value = "searchProducts", key = "#keyword")  // Local memory Cache 적용 -> Redis Cache 적용
+//    @Cacheable(value = "searchProducts", key = "#keyword")  // Local memory Cache 적용 -> Redis Cache 적용
     public Page<? extends ProductResponse> searchByProductNameCached(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);

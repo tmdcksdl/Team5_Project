@@ -29,7 +29,7 @@ public class SearchController {
     }
 
     // 인기 검색어 조회 API (상위 10개 검색어 조회)
-    @GetMapping("/popular")
+    @GetMapping("/searches/popular")
     public ResponseEntity<Set<String>> getPopularKeywords(
             @RequestParam(defaultValue = "10") int limit
     ) {
@@ -41,7 +41,7 @@ public class SearchController {
     }
 
     // 특정 검색어 캐시 삭제 API
-    @DeleteMapping("/cache")
+    @DeleteMapping("/searches/cache")
     public ResponseEntity<Void> evictCache(
             @RequestParam String keyword
     ) {
@@ -53,7 +53,7 @@ public class SearchController {
     }
 
     // 전체 검색어 캐시 삭제 API
-    @DeleteMapping("cache/all")
+    @DeleteMapping("/searches/cache/all")
     public ResponseEntity<Void> clearAllCache() {
 
 //        cacheService.clearCache();
