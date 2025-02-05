@@ -23,57 +23,69 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    // 회원가입
+    /**
+     * 회원가입
+     */
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpMemberResponse> signUpMember(
-            @Valid @RequestBody SignUpMemberRequest requestDto
+        @Valid @RequestBody SignUpMemberRequest requestDto
     ) {
         SignUpMemberResponse signUpMemberResponse = memberService.signUpMember(requestDto);
 
         return new ResponseEntity<>(signUpMemberResponse, HttpStatus.CREATED);
     }
 
-    // 로그인
+    /**
+     * 로그인
+     */
     @PostMapping("/sign-in")
     public ResponseEntity<SignInMemberResponse> signInMember(
-            @Valid @RequestBody SignInMemberRequest requestDto
+        @Valid @RequestBody SignInMemberRequest requestDto
     ) {
         SignInMemberResponse signInMemberResponse = memberService.signInMember(requestDto);
 
         return new ResponseEntity<>(signInMemberResponse, HttpStatus.OK);
     }
 
-    // 회원 정보 조회
+    /**
+     * 회원 정보 조회
+     * - 자신의 정보만 조회 가능
+     */
     @AuthCheck({"OWNER", "USER"})
     @GetMapping("/{memberId}")
     public ResponseEntity<FindMemberResponse> findMember(
-            @PathVariable Long memberId,
-            HttpServletRequest requestDto
+        @PathVariable Long memberId,
+        HttpServletRequest requestDto
     ) {
         FindMemberResponse findMemberResponse = memberService.findMember(memberId, requestDto);
 
         return new ResponseEntity<>(findMemberResponse, HttpStatus.OK);
     }
 
-    // 회원 정보 수정
+    /**
+     * 회원 정보 수정
+     * - 자신의 정보만 수정 가능
+     */
     @AuthCheck({"OWNER", "USER"})
     @PatchMapping("/{memberId}")
     public ResponseEntity<UpdateMemberResponse> updateMember(
-            @PathVariable Long memberId,
-            @RequestBody UpdateMemberRequest requestDto,
-            HttpServletRequest servletRequest
+        @PathVariable Long memberId,
+        @RequestBody UpdateMemberRequest requestDto,
+        HttpServletRequest servletRequest
     ) {
         UpdateMemberResponse updateMemberResponse = memberService.updateMember(memberId, requestDto, servletRequest);
 
         return new ResponseEntity<>(updateMemberResponse, HttpStatus.OK);
     }
 
-    // 회원 탈퇴
+    /**
+     * 회원 탈퇴
+     */
     @AuthCheck({"OWNER", "USER"})
     @DeleteMapping("/{memberId}")
     public ResponseEntity<Void> deleteMember(
-            @PathVariable Long memberId,
-            HttpServletRequest servletRequest
+        @PathVariable Long memberId,
+        HttpServletRequest servletRequest
     ) {
         memberService.deleteMember(memberId, servletRequest);
 
