@@ -21,11 +21,18 @@ public class Search {
     @Column(nullable = false)
     private String name;
 
+    @Comment("검색 횟수")
+    private int count = 1;
+
     public static Search of(String name) {
         return new Search(name);
     }
 
     private Search(String name){
         this.name = name;
+    }
+
+    public void incrementCount() {
+        this.count++;
     }
 }

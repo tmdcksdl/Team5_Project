@@ -8,24 +8,28 @@ import com.example.team5_project.common.exception.errorcode.ProductErrorCode;
 import com.example.team5_project.common.exception.errorcode.StoreErrorCode;
 import com.example.team5_project.common.utils.JwtUtil;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
+import com.example.team5_project.dto.product.response.*;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
-import com.example.team5_project.dto.product.response.OwnerReadProductResponse;
-import com.example.team5_project.dto.product.response.ProductResponse;
+import com.example.team5_project.dto.product.response.PageableProductResponse;
+import com.example.team5_project.dto.product.response.ReadProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
-import com.example.team5_project.dto.product.response.UserReadProductResponse;
 import com.example.team5_project.entity.Product;
 import com.example.team5_project.entity.Search;
 import com.example.team5_project.entity.Store;
+import com.example.team5_project.repository.ProductQueryRepository;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.SearchRepository;
 import com.example.team5_project.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -34,7 +38,10 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
+    private final CacheService cacheService;
+    private final RedisService redisService;
     private final JwtUtil jwtUtil;
+    private final ProductQueryRepository productQueryRepository;
 
     @Transactional
     public CreateProductResponse createProduct(Long storeId, String name, int price, int stock) {
@@ -96,7 +103,6 @@ public class ProductService {
      * @param token
      * @return
      */
-    @Cacheable("getProduct")
     @Transactional
     public ProductResponse getProduct(Long productId, String token) {
 
@@ -130,13 +136,21 @@ public class ProductService {
      * @param keyword
      * @return
      */
+    //
     @Transactional
     public Page<? extends ProductResponse> searchByProductName(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
 
-        Search createdSearch = Search.of(keyword);
-        searchRepository.save(createdSearch);
+        Search search = searchRepository.findByName(keyword).orElse(null);
+
+        // 검색어를 DB에도 저장 (중복 방지)
+        if (search != null) {
+            search.incrementCount();
+        } else {
+            Search createdSearch = Search.of(keyword);
+            searchRepository.save(createdSearch);
+        }
 
         Page<Product> productPage = productRepository.searchByName(keyword, pageable);
 
@@ -158,12 +172,26 @@ public class ProductService {
     }
 
     @Transactional
+//    @Cacheable(value = "searchProducts", key = "#keyword")  // Local memory Cache 적용 -> Redis Cache 적용
     public Page<? extends ProductResponse> searchByProductNameCached(Pageable pageable, String token, String keyword) {
 
         String userType = jwtUtil.extractUserType(token);
 
-        Search createdSearch = Search.of(keyword);
-        searchRepository.save(createdSearch);
+        // 검색어를 캐시에 저장 (+ 횟수 증가)
+        if (!(keyword == null || keyword.trim().isEmpty())) {
+//            cacheService.saveKeywordToCache(keyword);
+            redisService.saveKeywordToCache(keyword);
+        }
+
+        Search search = searchRepository.findByName(keyword).orElse(null);
+
+        // 검색어를 DB에도 저장 (중복 방지)
+        if (search != null) {
+            search.incrementCount();
+        } else {
+            Search createdSearch = Search.of(keyword);
+            searchRepository.save(createdSearch);
+        }
 
         Page<Product> productPage = productRepository.searchByName(keyword, pageable);
 
@@ -209,5 +237,15 @@ public class ProductService {
 
         productRepository.delete(foundProduct);
 
+    }
+
+    public Page<PageableProductResponse> findByPriceRange(Pageable pageable, Integer minPrice, Integer maxPrice){
+        Long startAt = System.currentTimeMillis();
+      Page<PageableProductResponse> responses = productQueryRepository.findByPriceRange(minPrice,maxPrice,pageable);
+        Long endAt = System.currentTimeMillis();
+
+        log.info("최적화 후 : " + (endAt - startAt) + "ms");
+
+      return responses;
     }
 }

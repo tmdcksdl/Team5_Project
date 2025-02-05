@@ -9,7 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
-@Table(name = "product")
+@Table(name = "product", indexes = {@Index(name = "idx_price",columnList = "price")})
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

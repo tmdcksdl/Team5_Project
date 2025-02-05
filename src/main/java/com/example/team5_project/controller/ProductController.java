@@ -5,6 +5,8 @@ import com.example.team5_project.dto.product.request.CreateProductRequest;
 import com.example.team5_project.dto.product.request.UpdateProductRequest;
 import com.example.team5_project.dto.product.response.CreateProductResponse;
 import com.example.team5_project.dto.product.response.ProductResponse;
+import com.example.team5_project.dto.product.response.PageableProductResponse;
+import com.example.team5_project.dto.product.response.ReadProductResponse;
 import com.example.team5_project.dto.product.response.UpdateProductResponse;
 import com.example.team5_project.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/stores")
@@ -81,7 +84,8 @@ public class ProductController {
             @RequestParam(name = "size",defaultValue = "5")int size,
             @RequestParam(name = "page", defaultValue = "1") int page,
             HttpServletRequest request,
-            @RequestParam String keyword) {
+            @RequestParam String keyword
+    ) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -141,6 +145,20 @@ public class ProductController {
 
         return new ResponseEntity<>("상품이 삭제 되었습니다.", HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("products")
+    public ResponseEntity<Page<PageableProductResponse>> findByPriceRange(
+                                                    @RequestParam(name = "minPrice", required = false)Integer minPrice,
+                                                    @RequestParam(name = "maxPrice", required = false)Integer maxPrice,
+                                                    @RequestParam(name = "page", defaultValue = "1")int page,
+                                                    @RequestParam(name = "size", defaultValue = "10")int size
+    ){
+        Pageable pageable = PageRequest.of(page - 1, size);
+       Page<PageableProductResponse> responses = productService.findByPriceRange(pageable, minPrice, maxPrice);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
+    }
+
 
     public String extractToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");

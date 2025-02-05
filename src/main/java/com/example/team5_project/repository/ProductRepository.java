@@ -25,6 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("select p From Product p WHERE p.store.id = :storeId")
     Page<Product> findProductByStoreId(Long storeId, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.name LIKE %:keyword% ORDER BY p.totalViewCounts DESC")
+    @Query("SELECT p FROM Product p WHERE :keyword is null or p.name LIKE %:keyword%  ORDER BY p.totalViewCounts DESC")
     Page<Product> searchByName(String keyword, Pageable pageable);
+
 }
