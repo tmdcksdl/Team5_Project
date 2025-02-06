@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -28,7 +29,6 @@ public class MemberService {
 
     // 회원가입 서비스
     public SignUpMemberResponse signUpMember(SignUpMemberRequest requestDto) {
-
         // 등록된 이메일 여부 확인
         if (memberRepository.findMemberByEmail(requestDto.getEmail()).isPresent()) {
             throw new MemberException(MemberErrorCode.EMAIL_EXIST);
@@ -49,7 +49,6 @@ public class MemberService {
 
     // 로그인 서비스
     public SignInMemberResponse signInMember(SignInMemberRequest requestDto) {
-
         Member foundMember = memberRepository.findMemberByEmail(requestDto.getEmail()).orElseThrow(() ->
                 new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
@@ -68,7 +67,6 @@ public class MemberService {
     // 회원 정보 조회 서비스
     @Transactional(readOnly = true)
     public FindMemberResponse findMember(Long memberId, HttpServletRequest requestDto) {
-
         Long id = (Long) requestDto.getAttribute("id");
 
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
@@ -87,9 +85,10 @@ public class MemberService {
     }
 
     // 회원 정보 수정 서비스
-    @Transactional
-    public UpdateMemberResponse updateMember(Long memberId, UpdateMemberRequest requestDto, HttpServletRequest servletRequest) {
-
+    public UpdateMemberResponse updateMember(
+            Long memberId, UpdateMemberRequest requestDto,
+            HttpServletRequest servletRequest
+    ) {
         Long id = (Long) servletRequest.getAttribute("id");
 
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->
@@ -102,17 +101,15 @@ public class MemberService {
         foundMember.updateMember(requestDto.getName(), requestDto.getAddress());
 
         return new UpdateMemberResponse(
-                foundMember.getId(), foundMember.getName(),
-                foundMember.getEmail(), foundMember.getGender(),
-                foundMember.getAddress(), foundMember.getUserType(),
-                foundMember.getCreatedAt(), foundMember.getUpdatedAt()
+            foundMember.getId(), foundMember.getName(),
+            foundMember.getEmail(), foundMember.getGender(),
+            foundMember.getAddress(), foundMember.getUserType(),
+            foundMember.getCreatedAt(), foundMember.getUpdatedAt()
         );
     }
 
     // 회원 탈퇴 서비스
-    @Transactional
     public void deleteMember(Long memberId, HttpServletRequest servletRequest) {
-
         Long id = (Long) servletRequest.getAttribute("id");
 
         Member foundMember = memberRepository.findById(memberId).orElseThrow(() ->

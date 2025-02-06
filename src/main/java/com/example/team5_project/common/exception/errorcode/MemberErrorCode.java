@@ -16,6 +16,9 @@ public enum MemberErrorCode {
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
     NOT_FOUND_OWNER(HttpStatus.NOT_FOUND, "존재하지 않는 사장님입니다."),
     INVALID_USER_TYPE(HttpStatus.NOT_FOUND, "유효하지 않은 사용자 타입입니다"),
+    MISSING_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "JWT 토큰이 필요합니다."),
+    INVALID_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "Token 값이 유효하지 않습니다."),
+
 
     // 공통
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "올바르지 않은 입력값입니다.");

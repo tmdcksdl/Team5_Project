@@ -57,6 +57,10 @@ dependencies {
 
 
 }
+// plain.jar 생성하지 않게 하기
+jar {
+    enabled = false
+}
 
 tasks.named('test') {
     useJUnitPlatform()
