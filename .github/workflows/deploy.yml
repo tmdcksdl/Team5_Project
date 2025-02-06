@@ -2,6 +2,7 @@ name: Team5 CI/CD Pipeline
 on:
   pull_request:
     branches:
+      - develop
       - main
   push:
     branches:
@@ -55,6 +56,18 @@ jobs:
       - name: show current time
         run: echo "CurrentTime=${{ steps.current-time.outputs.formattedTime }}"
         shell: bash
+
+      - name: 테스트 결과를 PR 코멘트로 출력
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+
+      - name: 테스트 실패 시, 오류가 발생한 코드 라인에 코멘트 추가
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
         
       # jar 파일이 있는지 확인
       - name: List files in build/libs
@@ -113,4 +126,3 @@ jobs:
           region: ap-northeast-2 # 서울 서버
           deployment_package: build/libs/*.jar
           use_existing_version_if_available: true
-          
