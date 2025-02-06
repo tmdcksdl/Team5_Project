@@ -26,7 +26,7 @@ public class OrdersController {
     /**
      * 주문 생성
      */
-    @PostMapping("/product/{productId}/order")
+    @PostMapping("/products/{productId}/orders")
     public ResponseEntity<OrderResponse> createOrder(
         @RequestAttribute("id") Long memberId,
         @PathVariable(name = "productId")Long productId,
@@ -40,7 +40,7 @@ public class OrdersController {
     /**
      * 주문 상태 수정
      */
-    @PatchMapping("/order/{orderId}")
+    @PatchMapping("/orders/{orderId}")
     public ResponseEntity<UpdateOrderResponse> updateOrderStatus(
         @RequestAttribute("id")Long memberId,
         @PathVariable(name ="orderId")Long orderId,
@@ -54,7 +54,7 @@ public class OrdersController {
     /**
      * 주문 삭제
      */
-    @DeleteMapping("/order/{orderId}")
+    @DeleteMapping("/orders/{orderId}")
     public ResponseEntity<UpdateOrderResponse> cancelOrder(
         @RequestAttribute("id")Long memberId,
         @PathVariable(name ="orderId")Long orderId
@@ -82,7 +82,7 @@ public class OrdersController {
     /**
      * 주문 상세 조회
      */
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/orders/{orderId}")
     public ResponseEntity<OrderResponse> findOrderDetailByMember(
         @RequestAttribute("id")Long memberId,
         @PathVariable(name ="orderId")Long orderId
@@ -96,7 +96,7 @@ public class OrdersController {
      * 가게별 주문 목록 조회
      */
     @AuthCheck({"OWNER"})
-    @GetMapping("/store/{storeId}/orders")
+    @GetMapping("/stores/{storeId}/orders")
     public ResponseEntity<Page<OrderPageableResponse>> findAllOrdersForOwner (
         @RequestAttribute("id")Long memberId,
         @RequestParam(name = "size",defaultValue = "5")int size,
@@ -113,7 +113,7 @@ public class OrdersController {
      * 가게별 주문 조회
      */
     @AuthCheck({"OWNER"})
-    @GetMapping("/store/{storeId}/order/{orderId}")
+    @GetMapping("/stores/{storeId}/orders/{orderId}")
     public ResponseEntity<OrderResponse> findOrderDetailForOwner(
         @RequestAttribute("id")Long memberId,
         @PathVariable(name ="storeId")Long storeId,
