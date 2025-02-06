@@ -55,10 +55,10 @@ public class Member extends BaseEntity {
 
     public static Member of(SignUpMemberRequest requestDto, String encodedPassword) {
         return new Member(
-                null, requestDto.getName(),
-                requestDto.getEmail(), encodedPassword,
-                Gender.of(requestDto.getGender()), requestDto.getAddress(),
-                UserType.of(requestDto.getUser_type())
+                null, requestDto.name(),
+                requestDto.email(), encodedPassword,
+                Gender.of(requestDto.gender()), requestDto.address(),
+                UserType.of(requestDto.userType())
         );
     }
 

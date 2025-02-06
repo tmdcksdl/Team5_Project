@@ -30,11 +30,11 @@ public class MemberService {
     // 회원가입 서비스
     public SignUpMemberResponse signUpMember(SignUpMemberRequest requestDto) {
         // 등록된 이메일 여부 확인
-        if (memberRepository.findMemberByEmail(requestDto.getEmail()).isPresent()) {
+        if (memberRepository.findMemberByEmail(requestDto.email()).isPresent()) {
             throw new MemberException(MemberErrorCode.EMAIL_EXIST);
         }
 
-        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
+        String encodedPassword = passwordEncoder.encode(requestDto.password());
         Member member = Member.of(requestDto, encodedPassword);
 
         Member savedMember = memberRepository.save(member);
@@ -49,10 +49,10 @@ public class MemberService {
 
     // 로그인 서비스
     public SignInMemberResponse signInMember(SignInMemberRequest requestDto) {
-        Member foundMember = memberRepository.findMemberByEmail(requestDto.getEmail()).orElseThrow(() ->
+        Member foundMember = memberRepository.findMemberByEmail(requestDto.email()).orElseThrow(() ->
                 new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), foundMember.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.password(), foundMember.getPassword())) {
             throw new MemberException(MemberErrorCode.UNAUTHORIZED);
         }
 
@@ -98,7 +98,7 @@ public class MemberService {
             throw new MemberException(MemberErrorCode.ACCESS_DENIED);
         }
 
-        foundMember.updateMember(requestDto.getName(), requestDto.getAddress());
+        foundMember.updateMember(requestDto.name(), requestDto.address());
 
         return new UpdateMemberResponse(
             foundMember.getId(), foundMember.getName(),
