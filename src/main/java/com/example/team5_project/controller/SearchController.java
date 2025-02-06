@@ -21,52 +21,52 @@ public class SearchController {
     private final CacheService cacheService;
     private final RedisService redisService;
 
+    /**
+     * DB에서 인기 검색어 조회
+     * - 조회수를 기준으로 내림차순 정렬되어 조회
+     */
     @GetMapping("/v1/searches")
-    public ResponseEntity<List<FindSearchResponse>> findAllSearchesV1(
-    ) {
+    public ResponseEntity<List<FindSearchResponse>> findAllSearchesV1() {
+        List<FindSearchResponse> searchResponseList = searchService.getSearchesV1();
 
-        return new ResponseEntity<>(searchService.getSearchesV1(), HttpStatus.OK);
+        return new ResponseEntity<>(searchResponseList, HttpStatus.OK);
     }
 
-    // 인기 검색어 조회 API (상위 10개 검색어 조회)
+    /**
+     * 인기 검색어 조회 API (상위 10개 검색어 조회)
+     * - Redis에 저장된 인기 검색어 조회
+     */
     @GetMapping("/searches/popular")
     public ResponseEntity<Set<String>> getPopularKeywords(
-            @RequestParam(defaultValue = "10") int limit
+        @RequestParam(defaultValue = "10") int limit
     ) {
-
-//        List<String> popularKeywords = cacheService.getPopularKeywords(limit);
-        Set<String> popularKeywords = redisService.getPopularKeywords(limit);
+        //List<String> popularKeywords = cacheService.getPopularKeywords(limit);  // 캐시 적용 시 사용
+        Set<String> popularKeywords = redisService.getPopularKeywords(limit);  // Redis 적용 시 사용
 
         return new ResponseEntity<>(popularKeywords, HttpStatus.OK);
     }
 
-    // 특정 검색어 캐시 삭제 API
+    /**
+     * 캐시에서 특정 검색어 삭제
+     */
     @DeleteMapping("/searches/cache")
     public ResponseEntity<Void> evictCache(
-            @RequestParam String keyword
+        @RequestParam String keyword
     ) {
-
-//        cacheService.removeKeyword(keyword);
-        redisService.deleteKeyword(keyword);
+        // cacheService.removeKeyword(keyword);  // 캐시 적용 시 사용
+        redisService.deleteKeyword(keyword);  // Redis 적용 시 사용
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // 전체 검색어 캐시 삭제 API
+    /**
+     * 캐시에 저장된 전체 검색어 삭제
+     */
     @DeleteMapping("/searches/cache/all")
     public ResponseEntity<Void> clearAllCache() {
-
-//        cacheService.clearCache();
-        redisService.clearPopularKeywords();
+        // cacheService.clearCache();  // 캐시 적용 시 사용
+        redisService.clearPopularKeywords();  // Redis 적용 시 사용
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
-//    @GetMapping("/v2/searches")
-//    public ResponseEntity<List<FindSearchResponse>> findAllSearchesV2(
-//    ) {
-//
-//        return new ResponseEntity<>(searchService.getSearchesV2(), HttpStatus.OK);
-//    }
 }
