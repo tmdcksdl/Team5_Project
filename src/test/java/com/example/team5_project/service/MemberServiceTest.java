@@ -54,15 +54,15 @@ class MemberServiceTest {
         ReflectionTestUtils.setField(savedMember, "id", 1L);
 
         // given
-        when(memberRepository.findMemberByEmail(signInRequest.getEmail())).thenReturn(Optional.empty());
+        when(memberRepository.findMemberByEmail(signInRequest.email())).thenReturn(Optional.empty());
         when(memberRepository.save(any(Member.class))).thenReturn(savedMember);
 
         // when
         SignUpMemberResponse actualResponse = memberService.signUpMember(signInRequest);
 
         // then
-        assertThat(actualResponse.getId()).isEqualTo(savedMember.getId());
-        assertThat(actualResponse.getEmail()).isEqualTo(savedMember.getEmail());
+        assertThat(actualResponse.id()).isEqualTo(savedMember.getId());
+        assertThat(actualResponse.email()).isEqualTo(savedMember.getEmail());
     }
 
     @Test
@@ -70,7 +70,7 @@ class MemberServiceTest {
         ReflectionTestUtils.setField(savedMember, "id", 1L);
 
         // given
-        when(memberRepository.findMemberByEmail(signInRequest.getEmail())).thenReturn(Optional.of(savedMember));
+        when(memberRepository.findMemberByEmail(signInRequest.email())).thenReturn(Optional.of(savedMember));
 
         // then
         Assertions.assertThrows(MemberException.class,()->memberService.signUpMember(signInRequest));
@@ -89,7 +89,7 @@ class MemberServiceTest {
         //when?
         when(memberRepository.findMemberByEmail(any(String.class))).thenReturn(Optional.of(foundMember));
 
-        when(passwordEncoder.matches(request.getPassword(), encodedPassword)).thenReturn(true);
+        when(passwordEncoder.matches(request.password(), encodedPassword)).thenReturn(true);
 
         when(jwtUtil.generateToken(foundMember.getId(), foundMember.getName(),
                 foundMember.getUserType())).thenReturn(token);
@@ -97,7 +97,7 @@ class MemberServiceTest {
         SignInMemberResponse actualResponse = memberService.signInMember(request);
 
         //then
-        assertThat(token).isEqualTo(actualResponse.getToken());
+        assertThat(token).isEqualTo(actualResponse.token());
 
     }
 
@@ -108,8 +108,8 @@ class MemberServiceTest {
         Member foundMember = Member.of(signInRequest, encodedPassword);
 
 
-        when(memberRepository.findMemberByEmail(request.getEmail())).thenReturn(Optional.of(foundMember));
-        when(passwordEncoder.matches(request.getPassword(), foundMember.getPassword())).thenReturn(false);
+        when(memberRepository.findMemberByEmail(request.email())).thenReturn(Optional.of(foundMember));
+        when(passwordEncoder.matches(request.password(), foundMember.getPassword())).thenReturn(false);
 
         //then
        Assertions.assertThrows(MemberException.class, ()-> memberService.signInMember(request));
