@@ -97,6 +97,7 @@ public class OrderService {
         return new UpdateOrderResponse(order);
     }
 
+
     public Page<OrderPageableResponse> findOrderHistoryByMember(Long memberId, Pageable pageable){
 
         return ordersRepository.findOrdersByMemberId(memberId, pageable);
@@ -104,10 +105,10 @@ public class OrderService {
 
     public OrderResponse findOrderDetailByMember(Long memberId, Long orderId){;
         Orders order = orderFindByIdOrThrow(orderId);
-        Long ordersMember = order.getMember().getId();
+        Long ordersMemberId = order.getMember().getId();
 
 
-        if(!Objects.equals(memberId, ordersMember)){
+        if(!Objects.equals(memberId, ordersMemberId)){
             throw new OrderException(OrderErrorCode.UNAUTHORIZED);
         }
 
