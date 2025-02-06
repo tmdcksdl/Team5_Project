@@ -16,9 +16,11 @@ public class RedisService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    // 검색어 저장 및 검색 횟수 증가
+    /**
+     * 검색어 저장 및 검색 횟수 증가
+     * - 검색어도 저장하고 인기 검색어의 count도 증가
+     */
     public void saveKeywordToCache(String keyword) {
-
         String key = SEARCH_KEY_PREFIX + keyword;
 
         // 검색어 자체를 저장
@@ -28,21 +30,26 @@ public class RedisService {
         redisTemplate.opsForZSet().incrementScore(POPULAR_SEARCH_KEY, keyword, 1);
     }
 
-    // 인기 검색어 조회
+    /**
+     * 저장된 인기 검색어 조회
+     */
     public Set<String> getPopularKeywords(int limit) {
 
         return redisTemplate.opsForZSet()
-                .reverseRange(POPULAR_SEARCH_KEY, 0, limit - 1);  // 점수가 높은 순으로 가져온다.
+                .reverseRange(POPULAR_SEARCH_KEY, 0, limit - 1);  // 점수가 높은 순으로 조회
     }
 
-    // 특정 검색어 캐시 삭제
+    /**
+     * 저장된 특정 검색어 삭제
+     */
     public void deleteKeyword(String keyword) {
-
         redisTemplate.delete(SEARCH_KEY_PREFIX + keyword);
         redisTemplate.opsForZSet().remove(POPULAR_SEARCH_KEY, keyword);
     }
 
-    // 전체 인기 검색어 삭제
+    /**
+     * 저장된 전체 인기 검색어 삭제
+     */
     public void clearPopularKeywords() {
         redisTemplate.delete(POPULAR_SEARCH_KEY);
     }
