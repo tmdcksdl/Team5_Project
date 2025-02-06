@@ -1,5 +1,9 @@
 package com.example.team5_project.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.example.team5_project.common.enums.Gender;
 import com.example.team5_project.common.enums.UserType;
 import com.example.team5_project.common.exception.MemberException;
@@ -11,6 +15,7 @@ import com.example.team5_project.dto.member.response.SignInMemberResponse;
 import com.example.team5_project.dto.member.response.SignUpMemberResponse;
 import com.example.team5_project.entity.Member;
 import com.example.team5_project.repository.MemberRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import java.util.Optional;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)

@@ -32,7 +32,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final StoreRepository storeRepository;
     private final SearchRepository searchRepository;
-    private final CacheService cacheService;
     private final RedisService redisService;
     private final JwtUtil jwtUtil;
     private final ProductQueryRepository productQueryRepository;
