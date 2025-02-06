@@ -16,33 +16,15 @@ public class SearchService {
     private final SearchRepository searchRepository;
 
     /**
-     * product를 조회한 검색어를 조회함
-     * @return
+     * DB에 저장된 검색어들을 count 기준으로 내림차순 정렬하여 조회
      */
     public List<FindSearchResponse> getSearchesV1() {
-
         List<Search> searchList = searchRepository.findSearchByName();
 
         return searchList
-                .stream()
-                .map(search -> new FindSearchResponse(search.getName(), search.getCount()))
-                .limit(10)
-                .collect(Collectors.toList());
+            .stream()
+            .map(search -> new FindSearchResponse(search.getName(), search.getCount()))
+            .limit(10)
+            .collect(Collectors.toList());
     }
-//
-//    /**
-//     * product를 조회한 검색어를 조회함 - 캐시 적용됨
-//     * @return
-//     */
-//    @Cacheable(value = "getSearchesV2")
-//    public List<FindSearchResponse> getSearchesV2() {
-//
-//        List<Object[]> searchList = searchRepository.findSearchByName();
-//
-//        return searchList
-//                .stream()
-//                .map(search -> new FindSearchResponse((String) search[0], (Long) search[1]))
-//                .limit(10)
-//                .collect(Collectors.toList());
-//    }
 }
