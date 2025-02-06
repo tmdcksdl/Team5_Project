@@ -22,13 +22,14 @@ import com.example.team5_project.repository.MemberRepository;
 import com.example.team5_project.repository.OrdersRepository;
 import com.example.team5_project.repository.ProductRepository;
 import com.example.team5_project.repository.StoreRepository;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -62,7 +63,6 @@ public class OrderService {
 
     @Transactional
     public UpdateOrderResponse updateOrderStatus(Long memberId, Long orderId, UpdateOrderRequest requestDto){
-        Member member = memberFindByIdOrThrow(memberId);
         Orders order = orderFindByIdOrThrow(orderId);
 
         Long ownerId = order.getProduct().getStore().getMember().getId();
@@ -123,11 +123,11 @@ public class OrderService {
         }
 
         Page<OrderPageableResponse> responses =  ordersRepository.findOrdersByStoreId(storeId, pageable);
+
         return responses;
     }
 
     public OrderResponse findOrderDetailForOwner(Long memberId, Long storeId, Long orderId){
-
         Store store = storeFindByIdOrThrow(storeId);
         Long ownerId = store.getMember().getId();
 
@@ -136,28 +136,29 @@ public class OrderService {
         }
 
         Orders order = orderFindByIdOrThrow(orderId);
+
         return new OrderResponse(order);
     }
 
 
 
     public Member memberFindByIdOrThrow(Long memberId){
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
+        return memberRepository.findById(memberId).orElseThrow(() ->
+                new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
     }
 
     public Store storeFindByIdOrThrow(Long storeId){
-        return storeRepository.findById(storeId)
-                .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND_STORE));
+        return storeRepository.findById(storeId).orElseThrow(() ->
+                new StoreException(StoreErrorCode.NOT_FOUND_STORE));
     }
 
     public Orders orderFindByIdOrThrow(Long orderId){
-        return ordersRepository.findById(orderId)
-                .orElseThrow(() -> new OrderException(OrderErrorCode.NOT_FOUND_ORDER));
+        return ordersRepository.findById(orderId).orElseThrow(() ->
+                new OrderException(OrderErrorCode.NOT_FOUND_ORDER));
     }
 
     public Product productFindByIdOrThrow(Long productId){
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ProductException(ProductErrorCode.NOT_FOUND_PRODUCT));
+        return productRepository.findById(productId).orElseThrow(() ->
+                new ProductException(ProductErrorCode.NOT_FOUND_PRODUCT));
     }
 }
