@@ -47,6 +47,7 @@ class OrderServiceTest {
 
     Member member = new Member();
     Product product = new Product();
+    Orders savedOrder = new Orders(member, product, OrderStatus.주문접수, 50);
 
 
 
@@ -54,7 +55,7 @@ class OrderServiceTest {
     @Test
     void 주문_요청(){
         CreateOrderRequest request = new CreateOrderRequest(50);
-        Orders savedOrder = new Orders(member, product, OrderStatus.주문접수, request.quantity());
+
 
 
 
