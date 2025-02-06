@@ -8,11 +8,11 @@ on:
   pull_request:
     branches:
       - develop
-      - main
+      - master
   push:
     branches:
       - develop
-      - main
+      - master
 
 jobs:
   build:
@@ -90,8 +90,8 @@ jobs:
     needs: build # 빌드가 성공해야 배포
     runs-on: ubuntu-latest
     
-    # github 이벤트가 main 브랜치 push인 경우, 배포 실행 
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # github 이벤트가 master 브랜치 push인 경우, 배포 실행 
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     
     steps:
     
