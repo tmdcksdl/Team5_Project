@@ -1,13 +1,5 @@
 package com.example.team5_project.dto.member.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public record UpdateMemberRequest(String name, String address) {
 
-@Getter
-@AllArgsConstructor
-public class UpdateMemberRequest {
-
-    private String name;
-
-    private String address;
 }

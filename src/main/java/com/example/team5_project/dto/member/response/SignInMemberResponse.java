@@ -1,11 +1,5 @@
 package com.example.team5_project.dto.member.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public record SignInMemberResponse(String token) {
 
-@Getter
-@AllArgsConstructor
-public class SignInMemberResponse {
-
-    private String token;
 }
