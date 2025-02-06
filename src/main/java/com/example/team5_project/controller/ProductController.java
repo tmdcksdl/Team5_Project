@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -154,14 +155,14 @@ public class ProductController {
      * 가격 범위 안에 있는 상품 조회
      */
     @GetMapping("products")
-    public ResponseEntity<Page<PageableProductResponse>> findByPriceRange(
+    public ResponseEntity<SliceImpl<PageableProductResponse>> findByPriceRange(
         @RequestParam(name = "minPrice", required = false)Integer minPrice,
         @RequestParam(name = "maxPrice", required = false)Integer maxPrice,
         @RequestParam(name = "page", defaultValue = "1")int page,
         @RequestParam(name = "size", defaultValue = "10")int size
     ){
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<PageableProductResponse> responses = productService.findByPriceRange(pageable, minPrice, maxPrice);
+        SliceImpl<PageableProductResponse> responses = productService.findByPriceRange(pageable, minPrice, maxPrice);
 
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }

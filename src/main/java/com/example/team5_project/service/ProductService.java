@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -229,9 +230,9 @@ public class ProductService {
         productRepository.delete(foundProduct);
     }
 
-    public Page<PageableProductResponse> findByPriceRange(Pageable pageable, Integer minPrice, Integer maxPrice){
+    public SliceImpl<PageableProductResponse> findByPriceRange(Pageable pageable, Integer minPrice, Integer maxPrice){
         Long startAt = System.currentTimeMillis();
-        Page<PageableProductResponse> responses = productQueryRepository.findByPriceRange(minPrice,maxPrice,pageable);
+        SliceImpl<PageableProductResponse> responses = productQueryRepository.findByPriceRange(minPrice,maxPrice,pageable);
         Long endAt = System.currentTimeMillis();
 
         log.info("최적화 후 : " + (endAt - startAt) + "ms");
