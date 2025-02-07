@@ -25,34 +25,34 @@ public class ProductQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-//    //최적화 전
-//    public Page<PageableProductResponse> findByPriceRange1( Integer min, Integer max, Pageable pageable) {
-//
-//        Integer minPrice = (min != null) ? min : 0;
-//        Integer maxPrice = (max != null) ? max : queryFactory.select(product.price.max()).from(product).fetchOne();
-//
-//
-//        List<PageableProductResponse> content = queryFactory
-//                .select(Projections.constructor(PageableProductResponse.class,
-//                        store.name, product.name, product.price))
-//                .from(product)
-//                .join(product.store, store)
-//                .where(product.price.between(minPrice, maxPrice))
-//                .orderBy(product.totalLikes.desc(), product.name.asc())
-//                .limit(pageable.getPageSize())
-//                .offset(pageable.getOffset())
-//                .fetch();
-//
-//        Long totalCount = queryFactory
-//                .select(product.count())
-//                .from(product)
-//                .where(product.price.between(minPrice, maxPrice))
-//                .fetchOne();
-//
-//        long total = Optional.ofNullable(totalCount).orElse(0L);
-//
-//        return new PageImpl<>(content, pageable, total);
-//    }
+    //최적화 전
+    public Page<PageableProductResponse> findByPriceRange1( Integer min, Integer max, Pageable pageable) {
+
+        Integer minPrice = (min != null) ? min : 0;
+        Integer maxPrice = (max != null) ? max : queryFactory.select(product.price.max()).from(product).fetchOne();
+
+
+        List<PageableProductResponse> content = queryFactory
+                .select(Projections.constructor(PageableProductResponse.class,
+                        store.name, product.name, product.price))
+                .from(product)
+                .join(product.store, store)
+                .where(product.price.between(minPrice, maxPrice))
+                .orderBy(product.price.desc(), product.name.asc())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .fetch();
+
+        Long totalCount = queryFactory
+                .select(product.count())
+                .from(product)
+                .where(product.price.between(minPrice, maxPrice))
+                .fetchOne();
+
+        long total = Optional.ofNullable(totalCount).orElse(0L);
+
+        return new PageImpl<>(content, pageable, total);
+    }
 
 
     //최적화 후
@@ -74,12 +74,12 @@ public class ProductQueryRepository {
                 .join(product.store)
                 .where(builder)
                 .orderBy(product.price.desc(), product.name.asc())
-                .limit(pageable.getPageSize())
+                .limit(pageable.getPageSize()+1)
                 .offset(pageable.getPageNumber())
                 .fetch();
 
-
         boolean hasNext = response.size() > pageable.getPageSize();
+
         if (hasNext) {
             response.remove(response.size() - 1);
         }
